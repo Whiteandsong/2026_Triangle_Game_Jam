@@ -1,2 +1,5 @@
 ﻿<Solution>
+  <Project Path="NavMeshPlus.csproj" />
+  <Project Path="Assembly-CSharp.csproj" />
+  <Project Path="NavMeshPlusEditor.csproj" />
 </Solution>
