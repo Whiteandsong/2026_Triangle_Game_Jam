@@ -24,6 +24,7 @@ public class GameManager : Singleton<GameManager>
     {
         // Initialize UI
         UpdateAllUI();
+        UIManager.Instance.ShowDialogue("This assignment gives you practical experience designing and implementing Blueprint Interfaces, a core communication pattern used in scalable, professional Unreal Engine projects. You’ll create your own interface, define its functions, and implement it across multiple actors to build a modular, reusable interaction system.");
     }
     
     void OnEnable()

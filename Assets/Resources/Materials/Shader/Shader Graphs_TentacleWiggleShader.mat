@@ -58,5 +58,6 @@ Material:
     - _WiggleSpeed: 0.03
     m_Colors:
     - White: {r: 1, g: 1, b: 1, a: 1}
+    - _GlowColor: {r: 20.885622, g: 26.99934, b: 31.626797, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
