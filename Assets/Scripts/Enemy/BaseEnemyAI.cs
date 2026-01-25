@@ -69,6 +69,23 @@ public class BaseEnemyAI : MonoBehaviour
             SetNewPatrolTarget();
         }
 
+        protected virtual void OnEnable()
+        {
+            // 订阅玩家躲藏事件
+            GameEvents.OnPlayerStartHiding += OnPlayerStartHiding;
+            GameEvents.OnPlayerStopHiding += OnPlayerStopHiding;
+            // 订阅玩家驱赶技能事件
+            GameEvents.OnPlayerUseScare += OnPlayerUseScare;
+        }
+
+        protected virtual void OnDisable()
+        {
+            // 取消订阅
+            GameEvents.OnPlayerStartHiding -= OnPlayerStartHiding;
+            GameEvents.OnPlayerStopHiding -= OnPlayerStopHiding;
+            GameEvents.OnPlayerUseScare -= OnPlayerUseScare;
+        }
+
         protected virtual void Update()
         {
             if (currentState == EnemyState.Patrol) PatrolLogic();
@@ -172,6 +189,27 @@ public class BaseEnemyAI : MonoBehaviour
 
         # region Public Control Methods
         
+        protected virtual void OnPlayerStartHiding()
+        {
+            if (currentState == EnemyState.Chase)
+            {
+                StopChase();
+            }
+        }
+        
+        protected virtual void OnPlayerStopHiding()
+        {
+        }
+        
+        // Player used scare ability
+        protected virtual void OnPlayerUseScare()
+        {
+            if (currentState == EnemyState.Chase)
+            {
+                StopChase();
+            }
+        }
+        
         public virtual void StartChase(Transform target)
         {
             playerTransform = target;
@@ -216,7 +254,7 @@ public class BaseEnemyAI : MonoBehaviour
 
         #endregion
 
-        # region Attack Methods
+        #region Attack Methods
 
         protected virtual void Attack()
         {
@@ -226,12 +264,19 @@ public class BaseEnemyAI : MonoBehaviour
 
         #endregion
 
-        # region Detection Methods
+        #region Detection Methods
 
         protected virtual void OnTriggerEnter2D(Collider2D collision)
         {
             if (collision.CompareTag(playerTag))
-                StartChase(collision.transform);
+            {
+                // detect player
+                PlayerController player = collision.GetComponent<PlayerController>();
+                if (player != null && !player.IsHiding)
+                {
+                    StartChase(collision.transform);
+                }
+            }
         }
 
         protected virtual void OnCollisionStay2D(Collision2D collision)

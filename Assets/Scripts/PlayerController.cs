@@ -4,19 +4,27 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     [Header("Horizontal Movement Settings")]
-    [SerializeField] private float moveSpeed = 5f;
+    [SerializeField] private float moveForce = 50f;
+    [SerializeField] private float maxSpeed = 5f;
     [SerializeField] private float oxygenConsumptionRate = 2f;
 
     [Header("Vertical Movement (Auto Rise / S Key Sink)")]
-    [SerializeField] private float riseSpeed = 3f; 
-    [SerializeField] private float sinkSpeed = 3f; 
+    [SerializeField] private float riseForce = 30f;
+    [SerializeField] private float sinkForce = 30f;
+    [SerializeField] private float maxVerticalSpeed = 3f;
     [SerializeField] private float oxygenConsumptionSinkRate = 1f;
 
     [Header("Interaction Settings")]
     [SerializeField] private KeyCode interactKey = KeyCode.E;
+    [SerializeField] private KeyCode scareKey = KeyCode.Space;
     [SerializeField] private GameObject interactPromptUI;
+    
     private Rigidbody2D rb;
-    private Vector2 currentVelocity;
+    private SpriteRenderer spriteRenderer;
+    
+    // Hiding state
+    public bool IsHiding { get; private set; } = false;
+    private bool isScareHiding = false;
     
     // Used to store the current interactable object within range
     private MonoBehaviour currentInteractableObject;
@@ -25,8 +33,12 @@ public class PlayerController : MonoBehaviour
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
-        rb.gravityScale = 0f; 
+        rb.gravityScale = 0f;
         rb.freezeRotation = true;
+        rb.linearDamping = 2f;
+        
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        
         interactPromptUI = gameObject.transform.Find("UIPrompt").gameObject;
         if(interactPromptUI != null) interactPromptUI.SetActive(false);
     }
@@ -56,11 +68,15 @@ public class PlayerController : MonoBehaviour
         // Handle interaction input
         CheckInteractionStatus();
         HandleInteractionInput();
+        
+        // Handle scare skill input
+        HandleScareInput();
     }
 
     void FixedUpdate()
     {
-        rb.linearVelocity = currentVelocity;
+        HandleHorizontalForce();
+        HandleVerticalForce();
     }
 
     #region Movement Handling
@@ -69,8 +85,15 @@ public class PlayerController : MonoBehaviour
     {
         float xInput = Input.GetAxisRaw("Horizontal");
         
-        // Only set the X-axis velocity, keep the current Y-axis velocity to avoid overwriting
-        currentVelocity.x = xInput * moveSpeed;
+        // Flip sprite based on movement direction
+        if (xInput < 0 && spriteRenderer != null)
+        {
+            spriteRenderer.flipX = true;
+        }
+        else if (xInput > 0 && spriteRenderer != null)
+        {
+            spriteRenderer.flipX = false;
+        }
 
         // Consume oxygen when moving horizontally
         if (xInput != 0 && GameManager.Instance != null)
@@ -79,25 +102,43 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    void HandleHorizontalForce()
+    {
+        float xInput = Input.GetAxisRaw("Horizontal");
+        rb.AddForce(Vector2.right * xInput * moveForce);
+        
+        // 限制最大水平速度
+        if (Mathf.Abs(rb.linearVelocity.x) > maxSpeed)
+        {
+            rb.linearVelocity = new Vector2(Mathf.Sign(rb.linearVelocity.x) * maxSpeed, rb.linearVelocity.y);
+        }
+    }
+
     void HandleVerticalMovement()
     {
-        float yVelocity;
-
-        // Hold S to sink, otherwise auto rise
-        if (Input.GetKey(KeyCode.S))
+        bool isSinking = Input.GetKey(KeyCode.S);
+        
+        if (spriteRenderer != null)
         {
-            yVelocity = -sinkSpeed;
-            if (GameManager.Instance != null)
-            {
-                GameManager.Instance.ChangeOxygen(-oxygenConsumptionSinkRate * Time.deltaTime);
-            }
-        }
-        else
-        {
-            yVelocity = riseSpeed;
+            spriteRenderer.flipY = isSinking;
         }
 
-        currentVelocity.y = yVelocity;
+        if (isSinking && GameManager.Instance != null)
+        {
+            GameManager.Instance.ChangeOxygen(-oxygenConsumptionSinkRate * Time.deltaTime);
+        }
+    }
+
+    void HandleVerticalForce()
+    {
+        float verticalForce = Input.GetKey(KeyCode.S) ? -sinkForce : riseForce;
+        rb.AddForce(Vector2.up * verticalForce);
+        
+        // 限制最大垂直速度
+        if (Mathf.Abs(rb.linearVelocity.y) > maxVerticalSpeed)
+        {
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, Mathf.Sign(rb.linearVelocity.y) * maxVerticalSpeed);
+        }
     }
     #endregion
 
@@ -129,6 +170,13 @@ public class PlayerController : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
+        // If the player enters a trigger collider with an interactable component
+        if (other.CompareTag("HidingSpot"))
+        {
+            StartHiding();
+            return;
+        }
+
         MonoBehaviour mb = other.GetComponent<MonoBehaviour>();
         IInteractable interactable = other.GetComponent<IInteractable>();
         
@@ -144,6 +192,12 @@ public class PlayerController : MonoBehaviour
     // When the player leaves the trigger range of an object
     private void OnTriggerExit2D(Collider2D other)
     {
+        if (other.CompareTag("HidingSpot"))
+        {
+            StopHiding();
+            return;
+        }
+
         IInteractable interactable = other.GetComponent<IInteractable>();
 
         // If the object leaving is the currently recorded interactable, clear the record
@@ -156,6 +210,58 @@ public class PlayerController : MonoBehaviour
             Debug.Log($"Left interaction range: {other.name}");
         }
     }
+    #endregion
+
+    #region Scare Skill
+    
+    private void HandleScareInput()
+    {
+        if (Input.GetKeyDown(scareKey))
+        {
+            UseScare();
+        }
+    }
+    
+    private void UseScare()
+    {
+        GameEvents.TriggerPlayerUseScare();
+        
+        isScareHiding = true;
+        StartHiding();
+        
+        Invoke(nameof(EndScareHiding), 5f);
+        
+        Debug.Log("Player used scare skill and entered hiding for 5 seconds!");
+    }
+    
+    private void EndScareHiding()
+    {
+        if (isScareHiding)
+        {
+            isScareHiding = false;
+            StopHiding();
+            Debug.Log("Scare hiding ended after 5 seconds");
+        }
+    }
+    
+    #endregion
+
+    #region Hiding Methods
+    
+    public void StartHiding()
+    {
+        IsHiding = true;
+        GameEvents.TriggerPlayerStartHiding();
+    }
+    
+    public void StopHiding()
+    {
+        if (isScareHiding) return;
+        
+        IsHiding = false;
+        GameEvents.TriggerPlayerStopHiding();
+    }
+    
     #endregion
 
     #region Death Handling
@@ -173,7 +279,6 @@ public class PlayerController : MonoBehaviour
     private void HandlePlayerRespawn(Vector3 respawnPosition)
     {
         transform.position = respawnPosition;
-        currentVelocity = Vector2.zero;
         rb.linearVelocity = Vector2.zero;
         Debug.Log($"Player respawned at {respawnPosition}");
     }

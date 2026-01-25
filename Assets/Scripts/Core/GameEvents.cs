@@ -15,6 +15,13 @@ public static class GameEvents
     // Checkpoint events
     public static event Action<DivingBell> OnCheckpointActivated;
     
+    // Hiding events
+    public static event Action OnPlayerStartHiding;
+    public static event Action OnPlayerStopHiding;
+    
+    // Scare skill event
+    public static event Action OnPlayerUseScare;
+    
     // Invoke methods
     public static void TriggerPlayerDeath()
     {
@@ -48,5 +55,23 @@ public static class GameEvents
     {
         OnCheckpointActivated?.Invoke(checkpoint);
         Debug.Log($"Event: Checkpoint {checkpoint.name} activated");
+    }
+    
+    public static void TriggerPlayerStartHiding()
+    {
+        OnPlayerStartHiding?.Invoke();
+        Debug.Log("Event: Player started hiding");
+    }
+    
+    public static void TriggerPlayerStopHiding()
+    {
+        OnPlayerStopHiding?.Invoke();
+        Debug.Log("Event: Player stopped hiding");
+    }
+    
+    public static void TriggerPlayerUseScare()
+    {
+        OnPlayerUseScare?.Invoke();
+        Debug.Log("Event: Player used scare skill");
     }
 }
