@@ -1,321 +1,277 @@
 using UnityEngine;
 using UnityEngine.AI;
-using System.Collections;
+using System.Threading.Tasks;
 
-public enum EnemyState
-{
-    Patrol,
-    Chase,
-    Attack
-}
+public enum EnemyState { Patrol, Chase, Attack }
+public enum PatrolType { RandomPoint, Waypoints }
 
-public enum PatrolType
-{
-    RandomPoint,
-    Waypoints
-}
-
-[RequireComponent(typeof(NavMeshAgent))]
-[RequireComponent(typeof(SpriteRenderer))]
+[RequireComponent(typeof(NavMeshAgent), typeof(SpriteRenderer))]
 public class BaseEnemyAI : MonoBehaviour
 {
-        [Header("Base Enemy AI Settings")]
-        public EnemyState currentState;
-        public PatrolType patrolType;
+    [Header("Settings")]
+    public EnemyState currentState = EnemyState.Patrol;
+    public PatrolType patrolType;
+    public float patrolSpeed = 3f, chaseSpeed = 5f;
+    public float patrolRange = 5f, waitTimeAtPoint = 2f;
+    public Transform[] waypoints;
 
-        [Header("Movement Parameters")]
-        public float patrolSpeed = 3f;
-        public float chaseSpeed = 4f;
+    [Header("Chase & Attack")]
+    public float detectRange = 5f, stopChaseDist = 7f, maxChaseDistFromSpawn = 20f;
+    public float attackRange = 1.5f, attackCooldown = 2f, attackDamage = 10f;
+    public float damageDelay = 0.4f;
+    public bool stopMoveWhileAttacking = true;
 
-        [Header("Patrol Logic")]
-        public float patrolRange = 5f;    
-        public Transform[] waypoints; 
-        public float waitTimeAtPoint = 2f;
+    [Header("Visuals")]
+    public bool useRotation = true;
+    public float rotateSpeed = 10f, idleSpeedThreshold = 0.1f;
 
-        [Header("Chase Logic")]
-        public string playerTag = "Player";
-        public float stopChaseDistance = 5f;
+    // Components & State
+    protected NavMeshAgent agent;
+    protected SpriteRenderer sr;
+    protected Animator anim;
+    protected Transform playerT; // playerTransform 简写
+    protected Vector2 startPos;
+    protected int wpIndex = 0;
+    protected float waitTimer = 0f, lastAttackTime = -999f;
+    protected bool isAttacking = false;
+
+    protected virtual void Start()
+    {
+        agent = GetComponent<NavMeshAgent>();
+        sr = GetComponent<SpriteRenderer>();
+        anim = GetComponent<Animator>();
+
+        agent.updateRotation = agent.updateUpAxis = false;
+        startPos = transform.position;
+        agent.speed = patrolSpeed;
+        SetNewPatrolTarget();
+    }
+
+    protected virtual void OnEnable()
+    {
+        GameEvents.OnPlayerStartHiding += OnPlayerStartHiding;
+        GameEvents.OnPlayerUseScare += OnPlayerUseScare;
+    }
+
+    protected virtual void OnDisable()
+    {
+        GameEvents.OnPlayerStartHiding -= OnPlayerStartHiding;
+        GameEvents.OnPlayerUseScare -= OnPlayerUseScare;
+    }
+
+    protected virtual void Update()
+    {
+        // Z轴修正
+        if (Mathf.Abs(transform.position.z) > 0.01f)
+            transform.position = new Vector3(transform.position.x, transform.position.y, 0);
+
+        // 攻击状态：只负责盯着玩家
+        if (isAttacking)
+        {
+            if (playerT) UpdateFacing(playerT.position - transform.position);
+            return;
+        }
+
+        // 状态机
+        switch (currentState)
+        {
+            case EnemyState.Patrol: PatrolLogic(); DetectPlayer(); break;
+            case EnemyState.Chase:  ChaseLogic(); break;
+        }
+
+        // 动画与朝向
+        float speed = agent.velocity.magnitude;
+        if (anim) anim.SetBool("IsSwimming", speed > idleSpeedThreshold);
+        if (speed > idleSpeedThreshold) UpdateFacing(agent.velocity);
+    }
+
+    // --- Logic Methods ---
+
+    protected virtual void PatrolLogic()
+    {
+        if (agent.speed != patrolSpeed) agent.speed = patrolSpeed;
+
+        // 计时器逻辑
+        if ((waitTimer -= Time.deltaTime) > 0) return;
         
-        [Tooltip("Max distance from spawn point before giving up chase (0 = unlimited)")]
-        public float maxChaseDistanceFromSpawn =20f;
-
-        [Header("Attack Logic")]
-        public float attackRange = 1f;
-        public float attackCooldown = 2f;
-        public float attackDamage = 10f;
-        protected float lastAttackTime = -999f;
-
-        // TODO: Animation
-
-        // Components
-        protected NavMeshAgent agent;
-        protected SpriteRenderer spriteRenderer;
-        protected Transform playerTransform;
-
-        // Internal State
-        protected Vector2 startPosition;
-        protected int currentWaypointIndex = 0;
-        protected float waitTimer = 0f;
-
-        protected virtual void Start()
+        // 刚结束等待，恢复移动
+        if (agent.isStopped && waitTimer <= 0) 
         {
-            agent = GetComponent<NavMeshAgent>();
-            spriteRenderer = GetComponent<SpriteRenderer>();
-            agent.updateRotation = agent.updateUpAxis = false;
-            
-            startPosition = transform.position;
-            currentState = EnemyState.Patrol;
-            agent.speed = patrolSpeed;
-            SetNewPatrolTarget();
-        }
-
-        protected virtual void OnEnable()
-        {
-            // 订阅玩家躲藏事件
-            GameEvents.OnPlayerStartHiding += OnPlayerStartHiding;
-            GameEvents.OnPlayerStopHiding += OnPlayerStopHiding;
-            // 订阅玩家驱赶技能事件
-            GameEvents.OnPlayerUseScare += OnPlayerUseScare;
-        }
-
-        protected virtual void OnDisable()
-        {
-            // 取消订阅
-            GameEvents.OnPlayerStartHiding -= OnPlayerStartHiding;
-            GameEvents.OnPlayerStopHiding -= OnPlayerStopHiding;
-            GameEvents.OnPlayerUseScare -= OnPlayerUseScare;
-        }
-
-        protected virtual void Update()
-        {
-            if (currentState == EnemyState.Patrol) PatrolLogic();
-            else if (currentState == EnemyState.Chase) ChaseLogic();
-            
-            HandleSpriteFlip();
-        }
-
-        # region State Logic Methods
-
-        protected virtual void PatrolLogic()
-        {
-            if (waitTimer > 0)
-            {
-                waitTimer -= Time.deltaTime;
-                if (waitTimer <= 0)
-                {
-                    agent.isStopped = false;
-                    SetNewPatrolTarget();
-                }
-                return;
-            }
-
-            if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance)
-            {
-                waitTimer = waitTimeAtPoint;
-                agent.isStopped = true;
-            }
-        }
-
-        protected virtual void ChaseLogic()
-        {
-            if (playerTransform == null) 
-            {
-                StopChase();
-                return;
-            }
-
-            // Check if too far from spawn point
-            if (maxChaseDistanceFromSpawn > 0)
-            {
-                float distanceFromSpawn = Vector2.Distance(transform.position, startPosition);
-                if (distanceFromSpawn > maxChaseDistanceFromSpawn)
-                {
-                    ReturnToSpawn();
-                    return;
-                }
-            }
-
-            // Only update destination if player moved significantly
-            if (Vector2.Distance(agent.destination, playerTransform.position) > 0.5f)
-            {
-                agent.SetDestination(playerTransform.position);
-            }
-
-            if (Vector2.Distance(transform.position, playerTransform.position) > stopChaseDistance)
-            {
-                StopChase();
-            }
-        }
-        #endregion
-
-        # region State Methods
-
-        protected virtual void HandleSpriteFlip()
-        {
-            if (agent.velocity.x > 0.1f) spriteRenderer.flipX = false;
-            else if (agent.velocity.x < -0.1f) spriteRenderer.flipX = true;
-        }
-
-        void SetNewPatrolTarget()
-        {
-            agent.speed = patrolSpeed;
-
-            if (patrolType == PatrolType.RandomPoint)
-            {
-                agent.SetDestination(GetRandomPointOnNavMesh());
-            }
-            else if (patrolType == PatrolType.Waypoints && waypoints.Length > 0)
-            {
-                Transform targetPoint = waypoints[currentWaypointIndex];
-                if (targetPoint != null)
-                {
-                    agent.SetDestination(targetPoint.position);
-                    currentWaypointIndex = (currentWaypointIndex + 1) % waypoints.Length;
-                }
-            }
-        }
-
-        Vector2 GetRandomPointOnNavMesh()
-        {
-            for (int i = 0; i < 10; i++)
-            {
-                Vector2 randomPoint = startPosition + Random.insideUnitCircle * patrolRange;
-                if (NavMesh.SamplePosition(randomPoint, out NavMeshHit hit, 1.0f, NavMesh.AllAreas))
-                    return hit.position;
-            }
-            return startPosition;
-        }
-        # endregion
-
-        # region Public Control Methods
-        
-        protected virtual void OnPlayerStartHiding()
-        {
-            if (currentState == EnemyState.Chase)
-            {
-                StopChase();
-            }
-        }
-        
-        protected virtual void OnPlayerStopHiding()
-        {
-        }
-        
-        // Player used scare ability
-        protected virtual void OnPlayerUseScare()
-        {
-            if (currentState == EnemyState.Chase)
-            {
-                StopChase();
-            }
-        }
-        
-        public virtual void StartChase(Transform target)
-        {
-            playerTransform = target;
-            currentState = EnemyState.Chase;
-            
-            // Ensure agent is enabled before modifying it
-            if (!agent.enabled)
-            {
-                agent.enabled = true;
-            }
-            
-            agent.speed = chaseSpeed;
             agent.isStopped = false;
-            waitTimer = 0f;
+            SetNewPatrolTarget();
+            return;
         }
 
-        public virtual void StopChase()
+        // 寻路中，跳过
+        if (agent.pathPending) return;
+
+        if (!agent.hasPath && agent.remainingDistance > 0.5f)
         {
-            playerTransform = null;
-            currentState = EnemyState.Patrol;
+            waitTimer = 0.5f;
+        }
+        else
+        {
+            waitTimer = waitTimeAtPoint;
+        }
+
+        if (!agent.hasPath)
+        {
+            agent.isStopped = true;
+            waitTimer = 0.5f;
+        }
+    }
+
+    protected virtual void ChaseLogic()
+    {
+        if (!playerT) { StopChase(); return; }
+
+        float dist = Vector2.Distance(transform.position, playerT.position);
+
+        // 距离检查：超出追击范围 或 超出出生点范围
+        if (dist > stopChaseDist || (maxChaseDistFromSpawn > 0 && Vector2.Distance(transform.position, startPos) > maxChaseDistFromSpawn))
+        {
+            ReturnToSpawn(); return;
+        }
+
+        // 攻击逻辑
+        if (dist <= attackRange)
+        {
+            if (stopMoveWhileAttacking) agent.isStopped = true;
+            if (Time.time >= lastAttackTime + attackCooldown) _ = PerformAttackAsync();
+        }
+        else // 追击逻辑
+        {
+            if (stopMoveWhileAttacking) agent.isStopped = false;
+            if (Vector2.Distance(agent.destination, playerT.position) > 0.5f)
+                agent.SetDestination(playerT.position);
+        }
+    }
+
+    protected virtual void DetectPlayer()
+    {
+        Collider2D hit = Physics2D.OverlapCircle(transform.position, detectRange, LayerMask.GetMask("Player"));
+        if (hit && hit.TryGetComponent(out PlayerController p) && !p.IsHiding)
+            StartChase(hit.transform);
+    }
+
+    // --- Actions ---
+
+    private async Task PerformAttackAsync()
+    {
+        if (isAttacking || destroyCancellationToken.IsCancellationRequested) return;
+        
+        isAttacking = true;
+        lastAttackTime = Time.time;
+        if (anim) anim.SetTrigger("Attack");
+
+        try
+        {
+            await Task.Delay((int)(damageDelay * 1000), destroyCancellationToken);
             
-            if (agent.enabled)
+            // 伤害判定
+            if (playerT && Vector2.Distance(transform.position, playerT.position) <= attackRange + 0.5f)
             {
-                agent.speed = patrolSpeed;
-                agent.isStopped = false;
-                SetNewPatrolTarget();
+                GameManager.Instance?.ChangeOxygen(-attackDamage);
+                GameEvents.TriggerPlayerHit(attackDamage); // 触发摄像机震动
+                Debug.Log("Hit Player!");
             }
+            await Task.Delay(500, destroyCancellationToken); // 后摇
         }
+        catch (TaskCanceledException) { /* 忽略销毁时的取消 */ }
 
-        public virtual void ReturnToSpawn()
+        isAttacking = false;
+        if (agent && agent.enabled && stopMoveWhileAttacking) agent.isStopped = false;
+    }
+
+    protected void UpdateFacing(Vector2 dir)
+    {
+        if (dir.magnitude < 0.01f) return;
+
+        // FlipX (三元运算简化)
+        if (Mathf.Abs(dir.x) > 0.1f) sr.flipX = dir.x > 0;
+
+        if (!useRotation) { transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.identity, Time.deltaTime * 2f); return; }
+
+        // Rotation
+        float angle = Mathf.Atan2(dir.y, Mathf.Abs(dir.x)) * Mathf.Rad2Deg;
+        angle = Mathf.Clamp(angle, -48f, 48f);
+        if (!sr.flipX) angle = -angle;
+
+        transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(0, 0, angle), Time.deltaTime * rotateSpeed);
+    }
+
+    // --- Movement Helpers ---
+
+    void SetNewPatrolTarget()
+    {
+        agent.speed = patrolSpeed;
+        if (patrolType == PatrolType.RandomPoint)
         {
-            playerTransform = null;
-            currentState = EnemyState.Patrol;
-            
-            if (agent.enabled)
-            {
-                agent.speed = patrolSpeed;
-                agent.isStopped = false;
-                agent.SetDestination(startPosition);
-            }
+            agent.SetDestination(GetRandomPoint());
         }
-
-        #endregion
-
-        #region Attack Methods
-
-        protected virtual void Attack()
+        else if (waypoints.Length > 0)
         {
-            if (playerTransform == null) return;
-            GameManager.Instance?.ChangeOxygen(-attackDamage);
+            agent.SetDestination(waypoints[wpIndex].position);
+            wpIndex = (wpIndex + 1) % waypoints.Length;
         }
+    }
 
-        #endregion
-
-        #region Detection Methods
-
-        protected virtual void OnTriggerEnter2D(Collider2D collision)
+    Vector2 GetRandomPoint()
+    {
+        for (int i = 0; i < 20; i++)
         {
-            if (collision.CompareTag(playerTag))
-            {
-                // detect player
-                PlayerController player = collision.GetComponent<PlayerController>();
-                if (player != null && !player.IsHiding)
-                {
-                    StartChase(collision.transform);
-                }
-            }
+            Vector2 pt = startPos + Random.insideUnitCircle * patrolRange;
+            if (NavMesh.SamplePosition(pt, out NavMeshHit hit, 2f, NavMesh.AllAreas)) return hit.position;
         }
+        return transform.position; // 找不到就原地待命
+    }
 
-        protected virtual void OnCollisionStay2D(Collision2D collision)
+    // --- Public Control ---
+
+    public virtual void StartChase(Transform target)
+    {
+        playerT = target;
+        currentState = EnemyState.Chase;
+        if (!agent.enabled) agent.enabled = true;
+        agent.speed = chaseSpeed;
+        agent.isStopped = false;
+        waitTimer = 0f;
+    }
+
+    public virtual void ReturnToSpawn() => ResetToPatrol(null);
+    public virtual void StopChase() => ResetToPatrol(null);
+    
+    private void ResetToPatrol(Transform _)
+    {
+        playerT = null;
+        currentState = EnemyState.Patrol;
+        if (agent.enabled)
         {
-            if (collision.gameObject.CompareTag(playerTag) && 
-                currentState == EnemyState.Chase && 
-                Time.time >= lastAttackTime + attackCooldown)
-            {
-                Attack();
-                lastAttackTime = Time.time;
-            }
+            agent.speed = patrolSpeed;
+            agent.isStopped = false;
+            // 如果是回出生点模式，直接设目标；否则找新巡逻点
+            if (Vector2.Distance(transform.position, startPos) > maxChaseDistFromSpawn) agent.SetDestination(startPos);
+            else SetNewPatrolTarget();
         }
+    }
 
-        protected virtual void OnDrawGizmosSelected()
-        {
-            if (patrolType == PatrolType.RandomPoint)
-            {
-                Gizmos.color = new Color(1, 1, 0, 0.3f);
-                Vector2 center = Application.isPlaying ? startPosition : (Vector2)transform.position;
-                Gizmos.DrawWireSphere(center, patrolRange);
-            }
+    // Events
+    protected virtual void OnPlayerStartHiding() { if (currentState == EnemyState.Chase) StopChase(); }
+    protected virtual void OnPlayerUseScare() { if (currentState == EnemyState.Chase) StopChase(); }
 
-            Gizmos.color = new Color(1, 0, 0, 0.3f);
-            Gizmos.DrawWireSphere(transform.position, stopChaseDistance);
-
-            // Draw max chase range from spawn
-            if (maxChaseDistanceFromSpawn > 0)
-            {
-                Gizmos.color = new Color(1, 0.5f, 0, 0.2f);
-                Vector2 center = Application.isPlaying ? startPosition : (Vector2)transform.position;
-                Gizmos.DrawWireSphere(center, maxChaseDistanceFromSpawn);
-            }
-
-            if (Application.isPlaying && agent != null)
-            {
-                Gizmos.color = Color.blue;
-                Gizmos.DrawLine(transform.position, agent.destination);
-            }
+    // --- Debug ---
+    protected virtual void OnDrawGizmosSelected()
+    {
+        Vector2 c = Application.isPlaying ? startPos : (Vector2)transform.position;
+        Gizmos.color = new Color(1, 1, 0, 0.3f);
+        if (patrolType == PatrolType.RandomPoint) Gizmos.DrawWireSphere(c, patrolRange);
+        
+        Gizmos.color = Color.green; Gizmos.DrawWireSphere(transform.position, detectRange);
+        Gizmos.color = Color.red;   Gizmos.DrawWireSphere(transform.position, stopChaseDist);
+        Gizmos.color = Color.magenta; Gizmos.DrawWireSphere(transform.position, attackRange);
+        
+        if (maxChaseDistFromSpawn > 0) {
+            Gizmos.color = new Color(1, 0.5f, 0, 0.2f); Gizmos.DrawWireSphere(c, maxChaseDistFromSpawn);
         }
-
-        #endregion
+    }
 }

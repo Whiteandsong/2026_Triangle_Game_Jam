@@ -18,136 +18,192 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private KeyCode interactKey = KeyCode.E;
     [SerializeField] private KeyCode scareKey = KeyCode.Space;
     [SerializeField] private GameObject interactPromptUI;
-    
+
+    [Header("Hit Flash Settings")]
+    [SerializeField] private Color hitFlashColor = Color.red;
+    [SerializeField] private float hitFlashDuration = 0.2f;
+
+    // Components
     private Rigidbody2D rb;
     private SpriteRenderer spriteRenderer;
+
+    // State Variables
+    private Color originalColor;
     
-    // Hiding state
+    // Timers (替换协程和Invoke)
+    private float hitFlashTimer = 0f;
+    private float scareTimer = 0f;
+    private float scareDuration = 5f;
+
+    // Hiding State
     public bool IsHiding { get; private set; } = false;
     private bool isScareHiding = false;
-    
-    // Used to store the current interactable object within range
+
+    // Interaction State
     private MonoBehaviour currentInteractableObject;
     private IInteractable currentInteractableInterface;
+
+    // Input Cache
+    private float currentXInput;
+    private bool isSinkingInput;
 
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         rb.gravityScale = 0f;
         rb.freezeRotation = true;
-        rb.linearDamping = 2f;
-        
+        // 注意：linearDamping 是 Unity 6 的新API，如果是旧版本请改回 drag
+        rb.linearDamping = 2f; 
+
         spriteRenderer = GetComponent<SpriteRenderer>();
-        
-        interactPromptUI = gameObject.transform.Find("UIPrompt").gameObject;
-        if(interactPromptUI != null) interactPromptUI.SetActive(false);
+        if (spriteRenderer != null)
+        {
+            originalColor = spriteRenderer.color;
+        }
+
+        if (interactPromptUI != null) 
+        {
+            // 缓存 transform 查找，避免 Awake 中潜在的开销（虽然只有一次）
+            // 如果 interactPromptUI 已经在 Inspector 赋值，这里就不需要 Find
+            if (interactPromptUI == null && transform.Find("UIPrompt") != null)
+                interactPromptUI = transform.Find("UIPrompt").gameObject;
+                
+            interactPromptUI.SetActive(false);
+        }
     }
 
     void OnEnable()
     {
-        // Subscribe to death and respawn events
         GameEvents.OnPlayerDeath += HandlePlayerDeath;
         GameEvents.OnPlayerInsane += HandlePlayerInsane;
         GameEvents.OnPlayerRespawn += HandlePlayerRespawn;
+        GameEvents.OnPlayerHit += HandlePlayerHit;
     }
-    
+
     void OnDisable()
     {
-        // Unsubscribe from events
         GameEvents.OnPlayerDeath -= HandlePlayerDeath;
         GameEvents.OnPlayerInsane -= HandlePlayerInsane;
         GameEvents.OnPlayerRespawn -= HandlePlayerRespawn;
+        GameEvents.OnPlayerHit -= HandlePlayerHit;
     }
 
     void Update()
     {
-        // Handle movement logic for different directions separately
-        HandleHorizontalMovement();
-        HandleVerticalMovement();
+        // 1. 处理所有计时器 (替代协程和Invoke)
+        HandleTimers();
 
-        // Handle interaction input
+        // 2. 处理输入 (在Update中读取输入最准确)
+        currentXInput = Input.GetAxisRaw("Horizontal");
+        isSinkingInput = Input.GetKey(KeyCode.S);
+
+        // 3. 处理视觉朝向
+        HandleSpriteOrientation();
+
+        // 4. 处理交互输入
         CheckInteractionStatus();
-        HandleInteractionInput();
+        if (Input.GetKeyDown(interactKey)) TryInteract();
         
-        // Handle scare skill input
-        HandleScareInput();
+        // 5. 处理技能输入
+        if (Input.GetKeyDown(scareKey)) UseScare();
+
+        // 6. 处理氧气消耗 (逻辑放在 Update 没问题)
+        HandleOxygenConsumption();
     }
 
     void FixedUpdate()
     {
-        HandleHorizontalForce();
-        HandleVerticalForce();
+        // 物理力学计算必须在 FixedUpdate
+        ApplyMovementForces();
     }
 
-    #region Movement Handling
+    #region Timer Logic (核心优化点)
 
-    void HandleHorizontalMovement()
+    private void HandleTimers()
     {
-        float xInput = Input.GetAxisRaw("Horizontal");
-        
-        // Flip sprite based on movement direction
-        if (xInput < 0 && spriteRenderer != null)
+        float dt = Time.deltaTime;
+
+        // 处理受击闪烁
+        if (hitFlashTimer > 0)
         {
-            spriteRenderer.flipX = true;
-        }
-        else if (xInput > 0 && spriteRenderer != null)
-        {
-            spriteRenderer.flipX = false;
+            hitFlashTimer -= dt;
+            if (hitFlashTimer <= 0)
+            {
+                if (spriteRenderer != null) spriteRenderer.color = originalColor;
+            }
         }
 
-        // Consume oxygen when moving horizontally
-        if (xInput != 0 && GameManager.Instance != null)
+        // 处理惊吓技能持续时间
+        if (isScareHiding)
         {
-            GameManager.Instance.ChangeOxygen(-oxygenConsumptionRate * Time.deltaTime);
+            scareTimer -= dt;
+            if (scareTimer <= 0)
+            {
+                EndScareHiding();
+            }
         }
     }
 
-    void HandleHorizontalForce()
+    #endregion
+
+    #region Movement & Physics
+
+    private void HandleSpriteOrientation()
     {
-        float xInput = Input.GetAxisRaw("Horizontal");
-        rb.AddForce(Vector2.right * xInput * moveForce);
+        if (spriteRenderer == null) return;
+
+        // 水平翻转
+        if (currentXInput < 0) spriteRenderer.flipX = true;
+        else if (currentXInput > 0) spriteRenderer.flipX = false;
+
+        // 垂直翻转
+        spriteRenderer.flipY = isSinkingInput;
+    }
+
+    private void HandleOxygenConsumption()
+    {
+        if (GameManager.Instance == null) return;
+
+        float dt = Time.deltaTime;
         
-        // 限制最大水平速度
+        if (currentXInput != 0)
+            GameManager.Instance.ChangeOxygen(-oxygenConsumptionRate * dt);
+
+        if (isSinkingInput)
+            GameManager.Instance.ChangeOxygen(-oxygenConsumptionSinkRate * dt);
+    }
+
+    private void ApplyMovementForces()
+    {
+        // 水平力
+        rb.AddForce(Vector2.right * currentXInput * moveForce);
+        
+        // 限制水平速度
         if (Mathf.Abs(rb.linearVelocity.x) > maxSpeed)
         {
-            rb.linearVelocity = new Vector2(Mathf.Sign(rb.linearVelocity.x) * maxSpeed, rb.linearVelocity.y);
-        }
-    }
-
-    void HandleVerticalMovement()
-    {
-        bool isSinking = Input.GetKey(KeyCode.S);
-        
-        if (spriteRenderer != null)
-        {
-            spriteRenderer.flipY = isSinking;
+            float limitedX = Mathf.Sign(rb.linearVelocity.x) * maxSpeed;
+            rb.linearVelocity = new Vector2(limitedX, rb.linearVelocity.y);
         }
 
-        if (isSinking && GameManager.Instance != null)
-        {
-            GameManager.Instance.ChangeOxygen(-oxygenConsumptionSinkRate * Time.deltaTime);
-        }
-    }
-
-    void HandleVerticalForce()
-    {
-        float verticalForce = Input.GetKey(KeyCode.S) ? -sinkForce : riseForce;
+        // 垂直力
+        float verticalForce = isSinkingInput ? -sinkForce : riseForce;
         rb.AddForce(Vector2.up * verticalForce);
-        
-        // 限制最大垂直速度
+
+        // 限制垂直速度
         if (Mathf.Abs(rb.linearVelocity.y) > maxVerticalSpeed)
         {
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, Mathf.Sign(rb.linearVelocity.y) * maxVerticalSpeed);
+            float limitedY = Mathf.Sign(rb.linearVelocity.y) * maxVerticalSpeed;
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, limitedY);
         }
     }
+
     #endregion
 
     #region Interactable Handling
 
-    private void HandleInteractionInput()
+    private void TryInteract()
     {
-        // If the interact key is pressed and there is a valid interactable object
-        if (Input.GetKeyDown(interactKey) && currentInteractableInterface != null)
+        if (currentInteractableInterface != null)
         {
             currentInteractableInterface.Interact(this.gameObject);
         }
@@ -155,41 +211,40 @@ public class PlayerController : MonoBehaviour
 
     private void CheckInteractionStatus()
     {
-        // Check status of current interactable object
-        if (currentInteractableObject == null)
+        // 如果当前交互对象意外销毁，清理状态
+        if (currentInteractableObject == null && currentInteractableInterface != null)
         {
-            currentInteractableInterface = null;
-            
-            // Hide UIprompt
-            if (interactPromptUI.activeSelf)
-            {
-                interactPromptUI.SetActive(false);
-            }
+            ClearInteraction();
         }
+    }
+
+    private void ClearInteraction()
+    {
+        currentInteractableObject = null;
+        currentInteractableInterface = null;
+        if (interactPromptUI != null) interactPromptUI.SetActive(false);
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        // If the player enters a trigger collider with an interactable component
         if (other.CompareTag("HidingSpot"))
         {
             StartHiding();
             return;
         }
 
-        MonoBehaviour mb = other.GetComponent<MonoBehaviour>();
-        IInteractable interactable = other.GetComponent<IInteractable>();
-        
-        if (interactable != null)
+        if (other.TryGetComponent(out IInteractable interactable))
         {
-            currentInteractableObject = mb;
-            currentInteractableInterface = interactable;
-            if(interactPromptUI != null) interactPromptUI.SetActive(true);            
-            Debug.Log($"Entered interaction range: {other.name}");
+            if (other.TryGetComponent(out MonoBehaviour mb))
+            {
+                currentInteractableObject = mb;
+                currentInteractableInterface = interactable;
+                if (interactPromptUI != null) interactPromptUI.SetActive(true);
+                Debug.Log($"Entered interaction range: {other.name}");
+            }
         }
     }
 
-    // When the player leaves the trigger range of an object
     private void OnTriggerExit2D(Collider2D other)
     {
         if (other.CompareTag("HidingSpot"))
@@ -198,50 +253,35 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
-        IInteractable interactable = other.GetComponent<IInteractable>();
-
-        // If the object leaving is the currently recorded interactable, clear the record
-        if (interactable != null && interactable == currentInteractableInterface)
+        // 检查离开的对象是否是当前交互对象
+        if (currentInteractableObject != null && other.gameObject == currentInteractableObject.gameObject)
         {
-            currentInteractableObject = null;
-            currentInteractableInterface = null;
-            //Hide interaction UI prompt
-            if(interactPromptUI != null) interactPromptUI.SetActive(false);            
+            ClearInteraction();
             Debug.Log($"Left interaction range: {other.name}");
         }
     }
+
     #endregion
 
     #region Scare Skill
-    
-    private void HandleScareInput()
-    {
-        if (Input.GetKeyDown(scareKey))
-        {
-            UseScare();
-        }
-    }
-    
+
     private void UseScare()
     {
         GameEvents.TriggerPlayerUseScare();
         
         isScareHiding = true;
+        // 重置计时器 (替代 Invoke)
+        scareTimer = scareDuration; 
+        
         StartHiding();
-        
-        Invoke(nameof(EndScareHiding), 5f);
-        
-        Debug.Log("Player used scare skill and entered hiding for 5 seconds!");
+        Debug.Log($"Player used scare skill and entered hiding for {scareDuration} seconds!");
     }
     
     private void EndScareHiding()
     {
-        if (isScareHiding)
-        {
-            isScareHiding = false;
-            StopHiding();
-            Debug.Log("Scare hiding ended after 5 seconds");
-        }
+        isScareHiding = false;
+        StopHiding();
+        Debug.Log("Scare hiding ended.");
     }
     
     #endregion
@@ -250,37 +290,53 @@ public class PlayerController : MonoBehaviour
     
     public void StartHiding()
     {
-        IsHiding = true;
-        GameEvents.TriggerPlayerStartHiding();
+        if (!IsHiding) // 防止重复触发
+        {
+            IsHiding = true;
+            GameEvents.TriggerPlayerStartHiding();
+        }
     }
     
     public void StopHiding()
     {
-        if (isScareHiding) return;
+        if (isScareHiding) return; // 如果正在技能隐身中，物理区域离开不应打断隐身
         
-        IsHiding = false;
-        GameEvents.TriggerPlayerStopHiding();
+        if (IsHiding)
+        {
+            IsHiding = false;
+            GameEvents.TriggerPlayerStopHiding();
+        }
     }
     
     #endregion
 
-    #region Death Handling
+    #region Event Handlers (Death, Hit, etc.)
     
-    private void HandlePlayerDeath()
-    {
-        Debug.Log("Player died from lack of oxygen!");
-    }
-    
-    private void HandlePlayerInsane()
-    {
-        Debug.Log("Player went insane!");
-    }
+    private void HandlePlayerDeath() { Debug.Log("Player died!"); }
+    private void HandlePlayerInsane() { Debug.Log("Player went insane!"); }
     
     private void HandlePlayerRespawn(Vector3 respawnPosition)
     {
         transform.position = respawnPosition;
         rb.linearVelocity = Vector2.zero;
-        Debug.Log($"Player respawned at {respawnPosition}");
+        
+        // 复活时重置状态
+        if (spriteRenderer != null) spriteRenderer.color = originalColor;
+        hitFlashTimer = 0f;
+        scareTimer = 0f;
+        isScareHiding = false;
+        IsHiding = false;
+    }
+    
+    private void HandlePlayerHit(float damage)
+    {
+        if (spriteRenderer == null) return;
+
+        // 设置颜色为红色
+        spriteRenderer.color = hitFlashColor;
+        
+        // 如果已经在闪烁，这会重置时间，这就实现了“连续受击刷新闪烁时间”的效果
+        hitFlashTimer = hitFlashDuration;
     }
     
     #endregion

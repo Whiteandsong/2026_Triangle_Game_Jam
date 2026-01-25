@@ -22,6 +22,9 @@ public static class GameEvents
     // Scare skill event
     public static event Action OnPlayerUseScare;
     
+    // Player hit event (for camera shake)
+    public static event Action<float> OnPlayerHit; // float parameter is damage amount
+    
     // Invoke methods
     public static void TriggerPlayerDeath()
     {
@@ -73,5 +76,11 @@ public static class GameEvents
     {
         OnPlayerUseScare?.Invoke();
         Debug.Log("Event: Player used scare skill");
+    }
+    
+    public static void TriggerPlayerHit(float damage)
+    {
+        OnPlayerHit?.Invoke(damage);
+        Debug.Log($"Event: Player hit for {damage} damage");
     }
 }

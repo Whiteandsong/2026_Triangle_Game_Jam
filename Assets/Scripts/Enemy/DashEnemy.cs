@@ -3,112 +3,134 @@ using UnityEngine.AI;
 
 public class DashEnemy : BaseEnemyAI
 {
-    [Header("Dash Attack Settings")]
-    public float dashDetectionRange = 5f;
+    [Header("Dash Settings")]
+    public float dashDetectRange = 5f;
     public float dashSpeed = 15f;
     public float dashDistance = 5f;
     public float dashCooldown = 3f;
     public float dashDamage = 15f;
     
-    [Header("Collision Settings")]
-    [Tooltip("Layer mask for walls/obstacles to stop dash")]
+    [Header("Layers")]
     public LayerMask obstacleLayer;
+    public LayerMask playerLayer;
 
-    [Header("Visual Effects")]
+    [Header("Visuals")]
     public Color dashColor = new Color(1f, 0.3f, 0.3f, 1f);
-    public float dashScaleMultiplier = 1.2f;
+    public float scaleMult = 1.2f;
 
+    // Internal State
     private bool isDashing;
     private float lastDashTime = -999f;
-    private Vector2 dashDirection, dashStartPosition;
-    private float dashDistanceTraveled;
-    private Color originalColor;
-    private Vector3 originalScale;
+    private Vector2 dashDir;
+    private float dashDistMoved;
+    private Color orgColor;
+    private Vector3 orgScale;
 
     protected override void Start()
     {
         base.Start();
-        originalColor = spriteRenderer.color;
-        originalScale = transform.localScale;
+        // 父类已经给 sr 赋值了，这里直接用
+        if (sr) orgColor = sr.color;
+        orgScale = transform.localScale;
     }
 
     protected override void Update()
     {
         if (isDashing) DashLogic();
-        else base.Update();
+        else base.Update(); // 不冲刺时，完全交给父类（巡逻、普通朝向）
     }
 
     protected override void ChaseLogic()
     {
-        if (!isDashing && playerTransform != null)
+        // 变量名变成了 playerT
+        if (isDashing || !playerT) return;
+
+        float dist = Vector2.Distance(transform.position, playerT.position);
+
+        // 判定冲刺条件
+        if (dist <= dashDetectRange && dist > 1.5f && Time.time >= lastDashTime + dashCooldown)
         {
-            float distanceToPlayer = Vector2.Distance(transform.position, playerTransform.position);
-            
-            if (distanceToPlayer <= dashDetectionRange && 
-                distanceToPlayer > 1.5f && 
-                Time.time >= lastDashTime + dashCooldown &&
-                !Physics2D.Linecast(transform.position, playerTransform.position, obstacleLayer))
+            // 只有当前方无墙时才冲
+            if (!Physics2D.Linecast(transform.position, playerT.position, obstacleLayer))
             {
                 StartDash();
-                return;
+                return; // 阻止父类逻辑
             }
         }
 
+        // 没冲刺则执行父类普通逻辑 (追逐/普通攻击)
         base.ChaseLogic();
     }
 
     private void StartDash()
     {
-        if (playerTransform == null) return;
-
         isDashing = true;
         lastDashTime = Time.time;
-        dashStartPosition = transform.position;
-        dashDistanceTraveled = 0f;
-        dashDirection = (playerTransform.position - transform.position).normalized;
+        dashDistMoved = 0f;
+        
+        // 锁定冲刺方向
+        dashDir = (playerT.position - transform.position).normalized;
 
-        agent.enabled = false;
+        if (agent) agent.enabled = false; // 关导航
+        
+        // 视觉特效
+        if (sr) sr.color = dashColor;
+        transform.localScale = orgScale * scaleMult;
+        if (anim) anim.SetTrigger("Attack");
 
-        spriteRenderer.color = dashColor;
-        transform.localScale = originalScale * dashScaleMultiplier;
+        //修正朝向 (FlipX + Rotation)
+        UpdateFacing(dashDir); 
     }
 
     private void DashLogic()
     {
-        float moveStep = dashSpeed * Time.deltaTime;
+        float step = dashSpeed * Time.deltaTime;
 
-        if (Physics2D.Raycast(transform.position, dashDirection, moveStep + 0.5f, obstacleLayer).collider != null)
+        // 1. 合并检测：前方 step+0.5 距离内是否有 墙 或 玩家
+        // 撞墙？
+        if (Physics2D.Raycast(transform.position, dashDir, step + 0.5f, obstacleLayer))
         {
-            StopDash();
-            return;
+            StopDash(); return;
         }
 
-        transform.position += (Vector3)(dashDirection * moveStep);
-        dashDistanceTraveled += moveStep;
+        // 撞人？
+        if (Physics2D.Raycast(transform.position, dashDir, step + 0.5f, playerLayer))
+        {
+            GameManager.Instance?.ChangeOxygen(-dashDamage);
+            GameEvents.TriggerPlayerHit(dashDamage); // 触发摄像机震动
+            StopDash(); return;
+        }
 
-        float pulseScale = 1f + Mathf.Sin(Time.time * 20f) * 0.05f;
-        transform.localScale = originalScale * dashScaleMultiplier * pulseScale;
+        // 2. 移动
+        transform.position += (Vector3)(dashDir * step);
+        dashDistMoved += step;
 
-        if (dashDistanceTraveled >= dashDistance)
-            StopDash();
+        // 3. 视觉脉冲
+        transform.localScale = orgScale * scaleMult * (1f + Mathf.Sin(Time.time * 20f) * 0.05f);
+
+        // 4. 距离结束
+        if (dashDistMoved >= dashDistance) StopDash();
     }
 
     private void StopDash()
     {
         isDashing = false;
+        
+        // 还原视觉
+        if (sr) sr.color = orgColor;
+        transform.localScale = orgScale;
 
-        spriteRenderer.color = originalColor;
-        transform.localScale = originalScale;
-
-        if (NavMesh.SamplePosition(transform.position, out NavMeshHit hit, 1.0f, NavMesh.AllAreas))
+        // 还原导航位置 (防止卡墙)
+        if (NavMesh.SamplePosition(transform.position, out NavMeshHit hit, 2f, NavMesh.AllAreas))
             transform.position = hit.position;
 
-        agent.enabled = true;
+        if (agent) agent.enabled = true;
         
-        if (currentState == EnemyState.Chase && playerTransform != null)
-            agent.SetDestination(playerTransform.position);
+        // 如果还在追，立刻更新目标
+        if (currentState == EnemyState.Chase && playerT) 
+            agent.SetDestination(playerT.position);
     }
-
+    
     public override void StopChase()
     {
         if (isDashing) StopDash();
@@ -119,21 +141,5 @@ public class DashEnemy : BaseEnemyAI
     {
         if (isDashing) StopDash();
         base.ReturnToSpawn();
-    }
-
-    protected override void OnCollisionStay2D(Collision2D collision)
-    {
-        if (collision.gameObject.CompareTag(playerTag))
-        {
-            if (isDashing)
-            {
-                GameManager.Instance?.ChangeOxygen(-dashDamage);
-                StopDash();
-            }
-            else if (currentState == EnemyState.Chase)
-            {
-                base.OnCollisionStay2D(collision);
-            }
-        }
     }
 }
