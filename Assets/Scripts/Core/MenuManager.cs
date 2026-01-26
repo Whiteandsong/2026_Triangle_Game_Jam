@@ -1,4 +1,6 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using System.Collections.Generic;
 
 public class MenuManager : MonoBehaviour
 {
@@ -7,9 +9,15 @@ public class MenuManager : MonoBehaviour
     [SerializeField] private GameObject pauseMenuPanel;
     [SerializeField] private GameObject settingPanel;
     [SerializeField] private GameObject hudPanel;
+    [SerializeField] private GameObject gameOverPanel; // 结局面板
+    [SerializeField] private GameObject tutorialPanel;
 
     [Header("Audio Clips")]
     [SerializeField] private AudioClip bgmMenuBGM;
+    [SerializeField] private AudioClip buttonClickSound;
+
+
+    [SerializeField] private List<GameObject> panelsToHide = new List<GameObject>();
 
     private bool isGamePlaying = false;
 
@@ -23,11 +31,14 @@ public class MenuManager : MonoBehaviour
             pauseMenuPanel = uiCanvas.transform.Find("PauseMenu")?.gameObject;
             settingPanel = uiCanvas.transform.Find("SettingPanel")?.gameObject;
             hudPanel = uiCanvas.transform.Find("HUD")?.gameObject;
+            gameOverPanel = uiCanvas.transform.Find("GameOverPanel")?.gameObject; // 确保你的Panel叫这个名字
+            tutorialPanel = uiCanvas.transform.Find("TutorialPanel")?.gameObject;
 
             if (mainMenuPanel == null) Debug.LogError("MainMenu panel not found!");
             if (pauseMenuPanel == null) Debug.LogError("PauseMenu panel not found!");
             if (settingPanel == null) Debug.LogError("SettingPanel not found!");
             if (hudPanel == null) Debug.LogError("HUD panel not found!");
+            if (gameOverPanel == null) Debug.LogError("GameOverPanel not found!");
         }
         else
         {
@@ -35,21 +46,39 @@ public class MenuManager : MonoBehaviour
         }
     }
 
+    private void OnEnable()
+    {
+        ForceClosePanels();
+        GameEvents.OnGameComplete += ShowGameOverPanel;
+    }
+
+    private void OnDisable()
+    {
+        GameEvents.OnGameComplete -= ShowGameOverPanel;
+    }
+
     private void Start()
     {
-        // 游戏开始时显示主菜单
         ShowMainMenu();
-
-        // 播放主菜单背景音乐
         if (bgmMenuBGM != null) AudioManager.Instance.PlayBGM(bgmMenuBGM);
     }
 
     private void Update()
     {
-        // 游戏进行中按ESC打开暂停菜单
         if (Input.GetKeyDown(KeyCode.Escape) && isGamePlaying)
         {
             PauseGame();
+        }
+    }
+
+    private void ForceClosePanels()
+    {
+        foreach (var panel in panelsToHide)
+        {
+            if (panel != null && panel.activeSelf)
+            {
+                panel.SetActive(false);
+            }
         }
     }
 
@@ -60,45 +89,61 @@ public class MenuManager : MonoBehaviour
         if (pauseMenuPanel != null) pauseMenuPanel.SetActive(false);
         if (settingPanel != null) settingPanel.SetActive(false);
         if (hudPanel != null) hudPanel.SetActive(false);
+        if (gameOverPanel != null) gameOverPanel.SetActive(false);
         
         isGamePlaying = false;
         Time.timeScale = 0f;
     }
 
+    // GameOver
+    private void ShowGameOverPanel()
+    {
+        // 隐藏其他面板
+        if (hudPanel != null) hudPanel.SetActive(false);
+        if (pauseMenuPanel != null) pauseMenuPanel.SetActive(false);
+        
+        // 显示结局面板 (这将触发 EndingPanelController 的 OnEnable)
+        if (gameOverPanel != null)
+        {
+            gameOverPanel.SetActive(true);
+        }
+        
+        // 确保光标显示（如果游戏里隐藏了光标的话）
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
+    }
+
+    // MainMenu Start -> Tutorial Panel
+    public void OnTutorialButtonClicked()
+    {
+        PlayButtonClickSound();
+        if (mainMenuPanel != null) mainMenuPanel.SetActive(false);
+        if (tutorialPanel != null) tutorialPanel.SetActive(true);
+    }
+
     // 点击Start按钮 - 开始游戏
     public void OnStartButtonClicked()
     {
-        // 关闭主菜单
-        if (mainMenuPanel != null) mainMenuPanel.SetActive(false);
+        PlayButtonClickSound(); 
         
-        // 显示HUD
+        if (GameManager.Instance != null)
+            GameManager.Instance.ResetGame();
+        
+        if (mainMenuPanel != null) mainMenuPanel.SetActive(false);
+        if (gameOverPanel != null) gameOverPanel.SetActive(false); // 确保关闭结局面板
         if (hudPanel != null) hudPanel.SetActive(true);
         
         isGamePlaying = true;
         Time.timeScale = 1f;
     }
 
-    // 从主菜单打开设置面板
-    public void OnSettingsButtonClicked()
-    {
-        if (settingPanel != null) settingPanel.SetActive(true);
-    }
-
-    // 从暂停菜单打开设置面板
-    public void OnPauseSettingsButtonClicked()
-    {
-        if (settingPanel != null) settingPanel.SetActive(true);
-    }
-
-    // 关闭设置面板
-    public void OnSettingsBackButtonClicked()
-    {
-        if (settingPanel != null) settingPanel.SetActive(false);
-    }
-
-    // 点击Exit按钮 - 退出游戏
+    public void OnSettingsButtonClicked() { PlayButtonClickSound(); if (settingPanel) settingPanel.SetActive(true); }
+    public void OnPauseSettingsButtonClicked() { PlayButtonClickSound(); if (settingPanel) settingPanel.SetActive(true); }
+    public void OnSettingsBackButtonClicked() { PlayButtonClickSound(); if (settingPanel) settingPanel.SetActive(false); }
+    
     public void OnExitButtonClicked()
     {
+        PlayButtonClickSound();
         #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
         #else
@@ -106,30 +151,34 @@ public class MenuManager : MonoBehaviour
         #endif
     }
 
-    // 暂停游戏（按ESC或手动调用）
     public void PauseGame()
     {
         Time.timeScale = 0f;
         isGamePlaying = false;
-        
-        if (hudPanel != null) hudPanel.SetActive(false);
-        if (pauseMenuPanel != null) pauseMenuPanel.SetActive(true);
+        if (hudPanel) hudPanel.SetActive(false);
+        if (pauseMenuPanel) pauseMenuPanel.SetActive(true);
     }
 
-    // 从暂停菜单恢复游戏
     public void ResumeGame()
     {
+        PlayButtonClickSound();
         Time.timeScale = 1f;
         isGamePlaying = true;
-        
-        if (pauseMenuPanel != null) pauseMenuPanel.SetActive(false);
-        if (hudPanel != null) hudPanel.SetActive(true);
+        if (pauseMenuPanel) pauseMenuPanel.SetActive(false);
+        if (hudPanel) hudPanel.SetActive(true);
     }
 
-    // 从暂停菜单回到主菜单
     public void BackToMainMenu()
     {
-        if (pauseMenuPanel != null) pauseMenuPanel.SetActive(false);
+        PlayButtonClickSound();
+        if (pauseMenuPanel) pauseMenuPanel.SetActive(false);
+        if (gameOverPanel) gameOverPanel.SetActive(false); // 也可以从结局面板回主菜单
         ShowMainMenu();
+    }
+    
+    private void PlayButtonClickSound()
+    {
+        if (buttonClickSound != null && AudioManager.Instance != null)
+            AudioManager.Instance.PlaySFX(buttonClickSound);
     }
 }

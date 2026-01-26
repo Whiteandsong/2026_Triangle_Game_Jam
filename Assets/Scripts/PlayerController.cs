@@ -22,10 +22,21 @@ public class PlayerController : MonoBehaviour
     [Header("Hit Flash Settings")]
     [SerializeField] private Color hitFlashColor = Color.red;
     [SerializeField] private float hitFlashDuration = 0.2f;
-
+    
+    [Header("Animator Settings")]
+    [SerializeField] private RuntimeAnimatorController defaultAnimatorController;
+    [SerializeField] private RuntimeAnimatorController level4AnimatorController;
+    
+    [Header("Audio Settings")]
+    [SerializeField] private AudioClip hitSoundEffect;
+    [SerializeField] private AudioClip deathSoundEffect;
+    [SerializeField] private AudioClip scareSoundEffect;
     // Components
     private Rigidbody2D rb;
     private SpriteRenderer spriteRenderer;
+    private Animator animator;
+    private CapsuleCollider2D capsuleCollider;
+    private Vector2 originalColliderOffset;
 
     // State Variables
     private Color originalColor;
@@ -59,6 +70,31 @@ public class PlayerController : MonoBehaviour
         if (spriteRenderer != null)
         {
             originalColor = spriteRenderer.color;
+        }
+        
+        animator = GetComponent<Animator>();
+        if (animator == null)
+        {
+            Debug.LogWarning("PlayerController: Animator component not found!");
+        }
+        else
+        {
+            // 如果没有手动指定，则保存当前的AnimatorController作为默认
+            if (defaultAnimatorController == null)
+            {
+                defaultAnimatorController = animator.runtimeAnimatorController;
+            }
+        }
+        
+        capsuleCollider = GetComponent<CapsuleCollider2D>();
+        if (capsuleCollider != null)
+        {
+            // 记录原始的 collider offset
+            originalColliderOffset = capsuleCollider.offset;
+        }
+        else
+        {
+            Debug.LogWarning("PlayerController: CapsuleCollider2D component not found!");
         }
 
         if (interactPromptUI != null) 
@@ -105,6 +141,7 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKeyDown(interactKey)) TryInteract();
         
         // 5. 处理技能输入
+        //TODO: CoolDown and Use times
         if (Input.GetKeyDown(scareKey)) UseScare();
 
         // 6. 处理氧气消耗 (逻辑放在 Update 没问题)
@@ -153,8 +190,29 @@ public class PlayerController : MonoBehaviour
         if (spriteRenderer == null) return;
 
         // 水平翻转
-        if (currentXInput < 0) spriteRenderer.flipX = true;
-        else if (currentXInput > 0) spriteRenderer.flipX = false;
+        bool shouldFlipX = spriteRenderer.flipX;
+        
+        if (currentXInput < 0)
+        {
+            spriteRenderer.flipX = true;
+            shouldFlipX = true;
+        }
+        else if (currentXInput > 0)
+        {
+            spriteRenderer.flipX = false;
+            shouldFlipX = false;
+        }
+        
+        // 同步翻转碰撞体 offset
+        if (capsuleCollider != null)
+        {
+            Vector2 newOffset = originalColliderOffset;
+            if (shouldFlipX)
+            {
+                newOffset.x = -originalColliderOffset.x;
+            }
+            capsuleCollider.offset = newOffset;
+        }
 
         // 垂直翻转
         spriteRenderer.flipY = isSinkingInput;
@@ -235,7 +293,8 @@ public class PlayerController : MonoBehaviour
 
         if (other.TryGetComponent(out IInteractable interactable))
         {
-            if (other.TryGetComponent(out MonoBehaviour mb))
+            // 检查是否可以交互
+            if (interactable.CanInteract && other.TryGetComponent(out MonoBehaviour mb))
             {
                 currentInteractableObject = mb;
                 currentInteractableInterface = interactable;
@@ -267,11 +326,33 @@ public class PlayerController : MonoBehaviour
 
     private void UseScare()
     {
+        // 检查是否还有Scare次数
+        if (GameManager.Instance == null || !GameManager.Instance.HasScareCharges())
+        {
+            UIManager.Instance?.ShowDialogue("Scare device is dead...");
+            return;
+        }
+        
+        // 消耗一次Scare次数
+        if (!GameManager.Instance.UseScareCharge())
+        {
+            return;
+        }
+        
         GameEvents.TriggerPlayerUseScare();
         
         isScareHiding = true;
         // 重置计时器 (替代 Invoke)
-        scareTimer = scareDuration; 
+        scareTimer = scareDuration;
+        
+        // 播放 Scare 动画
+        if (animator != null)
+        {
+            animator.SetTrigger("Scare");
+        }
+        
+        // Audio
+        AudioManager.Instance.PlaySFX(scareSoundEffect);
         
         StartHiding();
         Debug.Log($"Player used scare skill and entered hiding for {scareDuration} seconds!");
@@ -293,6 +374,10 @@ public class PlayerController : MonoBehaviour
         if (!IsHiding) // 防止重复触发
         {
             IsHiding = true;
+            
+            // 平滑降低BGM音量到80%
+            if (AudioManager.Instance != null) { AudioManager.Instance.FadeBGMToLower(0.8f);}
+            
             GameEvents.TriggerPlayerStartHiding();
         }
     }
@@ -304,6 +389,10 @@ public class PlayerController : MonoBehaviour
         if (IsHiding)
         {
             IsHiding = false;
+            
+            // 平滑恢复BGM音量
+            if (AudioManager.Instance != null) { AudioManager.Instance.FadeBGMToOriginal();}
+            
             GameEvents.TriggerPlayerStopHiding();
         }
     }
@@ -312,7 +401,7 @@ public class PlayerController : MonoBehaviour
 
     #region Event Handlers (Death, Hit, etc.)
     
-    private void HandlePlayerDeath() { Debug.Log("Player died!"); }
+    private void HandlePlayerDeath() {AudioManager.Instance.PlaySFX(deathSoundEffect); }
     private void HandlePlayerInsane() { Debug.Log("Player went insane!"); }
     
     private void HandlePlayerRespawn(Vector3 respawnPosition)
@@ -332,11 +421,36 @@ public class PlayerController : MonoBehaviour
     {
         if (spriteRenderer == null) return;
 
-        // 设置颜色为红色
         spriteRenderer.color = hitFlashColor;
         
-        // 如果已经在闪烁，这会重置时间，这就实现了“连续受击刷新闪烁时间”的效果
-        hitFlashTimer = hitFlashDuration;
+        hitFlashTimer = hitFlashDuration;        
+        if (hitSoundEffect != null && AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlaySFX(hitSoundEffect);
+        }    }
+    
+    #endregion
+    
+    #region Animator Switching
+    
+    // 切换到关卡四的AnimatorController（用于关卡四形象变化）
+    public void SwitchToLevel4Animator()
+    {
+        if (animator == null)
+        {
+            Debug.LogWarning("Animator component not found!");
+            return;
+        }
+        
+        if (level4AnimatorController != null)
+        {
+            animator.runtimeAnimatorController = level4AnimatorController;
+            Debug.Log("Switched to Level 4 Animator Controller");
+        }
+        else
+        {
+            Debug.LogWarning("Level 4 Animator Controller not assigned!");
+        }
     }
     
     #endregion

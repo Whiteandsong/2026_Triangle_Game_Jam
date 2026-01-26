@@ -213,6 +213,6 @@ MonoBehaviour:
   damageDelay: 0
   stopMoveWhileAttacking: 0
   useRotation: 1
-  rotateSpeed: 10
+  rotateSpeed: 2
   idleSpeedThreshold: 0.1
   stopDistance: 4

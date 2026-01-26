@@ -5,14 +5,19 @@ public class DivingBell : MonoBehaviour, IInteractable
     [Header("Checkpoint Settings")]
     [SerializeField] private bool isActivated = false;
     
+    public bool CanInteract => !isActivated;
+    
     [Header("Recovery Settings")]
     [SerializeField] private float oxygenRecoveryRate = 5f;
     [SerializeField] private float sanityRecoveryRate = 3f;
     [SerializeField] private bool enableRecovery = true;
     
     [Header("Visual Feedback")]
-    [SerializeField] private Color inactiveColor = Color.gray;
-    [SerializeField] private Color activeColor = Color.green;
+    [SerializeField] private Sprite inactiveSprite;
+    [SerializeField] private Sprite activeSprite;
+    
+    [Header("Audio Settings")]
+    [SerializeField] private AudioClip activationSound;
     
     private PlayerController playerInRange;
     private SpriteRenderer spriteRenderer;
@@ -27,6 +32,8 @@ public class DivingBell : MonoBehaviour, IInteractable
         // 自动查找子物体中名为respawnPoint的Transform
         Transform child = transform.Find("respawnPoint");
         if (child != null) respawnPoint = child;
+        
+        // 设置初始图片
         UpdateVisuals();
     }
 
@@ -35,7 +42,7 @@ public class DivingBell : MonoBehaviour, IInteractable
         if (isActivated && enableRecovery && playerInRange != null)
         {
             GameManager.Instance?.ChangeOxygen(oxygenRecoveryRate * Time.deltaTime);
-            GameManager.Instance?.ChangeSanity(sanityRecoveryRate * Time.deltaTime);
+           //GameManager.Instance?.ChangeSanity(sanityRecoveryRate * Time.deltaTime);
         }
     }
     
@@ -46,6 +53,12 @@ public class DivingBell : MonoBehaviour, IInteractable
             isActivated = true;
             UpdateVisuals();
             GameEvents.TriggerCheckpointActivated(this);
+            
+            if (activationSound != null && AudioManager.Instance != null)
+            {
+                AudioManager.Instance.PlaySFX(activationSound);
+            }
+            
             Debug.Log($"Checkpoint {gameObject.name} activated!");
         }
     }
@@ -54,7 +67,11 @@ public class DivingBell : MonoBehaviour, IInteractable
     {
         if (spriteRenderer != null)
         {
-            spriteRenderer.color = isActivated ? activeColor : inactiveColor;
+            Sprite targetSprite = isActivated ? activeSprite : inactiveSprite;
+            if (targetSprite != null)
+            {
+                spriteRenderer.sprite = targetSprite;
+            }
         }
     }
     

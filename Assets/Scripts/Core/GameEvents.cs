@@ -11,6 +11,7 @@ public static class GameEvents
     // Resource events
     public static event Action<float> OnOxygenChanged;
     public static event Action<float> OnSanityChanged;
+    public static event Action<int, int> OnScareChargesChanged; // (current, max)
     
     // Checkpoint events
     public static event Action<DivingBell> OnCheckpointActivated;
@@ -24,6 +25,16 @@ public static class GameEvents
     
     // Player hit event (for camera shake)
     public static event Action<float> OnPlayerHit; // float parameter is damage amount
+    
+    // Level events
+    public static event Action<int> OnLevelStarted; // int parameter is level index
+    public static event Action OnGameComplete;
+    
+    // Treasure events
+    public static event Action<string> OnTreasureCollected; // string parameter is treasure name
+    
+    // Lighting events
+    public static event Action<float, float> OnLightingChanged; // (globalIntensity, spotlightIntensity)
     
     // Invoke methods
     public static void TriggerPlayerDeath()
@@ -54,6 +65,11 @@ public static class GameEvents
         OnSanityChanged?.Invoke(normalizedAmount);
     }
     
+    public static void TriggerScareChargesChanged(int current, int max)
+    {
+        OnScareChargesChanged?.Invoke(current, max);
+    }
+    
     public static void TriggerCheckpointActivated(DivingBell checkpoint)
     {
         OnCheckpointActivated?.Invoke(checkpoint);
@@ -82,5 +98,29 @@ public static class GameEvents
     {
         OnPlayerHit?.Invoke(damage);
         Debug.Log($"Event: Player hit for {damage} damage");
+    }
+    
+    public static void TriggerLevelStarted(int levelIndex)
+    {
+        OnLevelStarted?.Invoke(levelIndex);
+        Debug.Log($"Event: Level {levelIndex} started");
+    }
+    
+    public static void TriggerGameComplete()
+    {
+        OnGameComplete?.Invoke();
+        Debug.Log("Event: Game completed!");
+    }
+    
+    public static void TriggerTreasureCollected(string treasureName)
+    {
+        OnTreasureCollected?.Invoke(treasureName);
+        Debug.Log($"Event: Treasure collected - {treasureName}");
+    }
+    
+    public static void TriggerLightingChanged(float globalIntensity, float spotlightIntensity)
+    {
+        OnLightingChanged?.Invoke(globalIntensity, spotlightIntensity);
+        Debug.Log($"Event: Lighting changed - Global={globalIntensity}, Spotlight={spotlightIntensity}");
     }
 }

@@ -4,7 +4,15 @@ using System.Threading.Tasks;
 public class PassiveEnemy : BaseEnemyAI
 {
     [Header("Passive Enemy Settings")]
+    public bool followPlayer = true;
     public float stopDistance = 2.5f;
+
+    protected override void DetectPlayer()
+    {
+        if (!followPlayer) return;
+
+        base.DetectPlayer();
+    }
 
     protected override void ChaseLogic()
     {

@@ -190,6 +190,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Treasure
   treasureName: Unknown Treasure
+  collectSound: {fileID: 8300000, guid: 4015a890660d0bb48a79fb27c19021d3, type: 3}
 --- !u!114 &2370497301605234715
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -203,6 +204,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: NavMeshPlus::NavMeshPlus.Components.NavMeshModifier
   m_OverrideArea: 1
-  m_Area: 0
+  m_Area: 1
   m_IgnoreFromBuild: 0
   m_AffectedAgents: ffffffff

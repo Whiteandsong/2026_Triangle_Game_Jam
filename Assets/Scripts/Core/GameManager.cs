@@ -1,30 +1,45 @@
 using UnityEngine;
-
+using System.Collections.Generic;
 public class GameManager : Singleton<GameManager>
 {
     [Header("Player Stats Settings")]
     [SerializeField] private float maxOxygen = 100f;
     [SerializeField] private float maxSanity = 100f;
+    [SerializeField] private int maxScareCharges = 3;
 
     [Header("Checkpoint System")]
     private DivingBell currentCheckpoint;
     private Vector3 defaultRespawnPosition = Vector3.zero;
+    private int checkpointScareCharges = 0; // checkpoint保存的scare次数
+    
+    [Header("Treasure Collection")]
+    private HashSet<string> collectedTreasures = new HashSet<string>();
     
     public float CurrentOxygen { get; private set; }
     public float CurrentSanity { get; private set; }
+    public int CurrentScareCharges { get; private set; }
+
+    public float MaxSanity => maxSanity;
+
+    [Header("UI Elements")]
+    [SerializeField] private GameObject gameOverPanel;
 
     protected override void Awake()
     {
         base.Awake();
         CurrentOxygen = maxOxygen;
         CurrentSanity = maxSanity;
+        
+        // 从PlayerPrefs加载scare次数，默认为3次
+        CurrentScareCharges = PlayerPrefs.GetInt("ScareCharges", maxScareCharges);
+        checkpointScareCharges = CurrentScareCharges;
     }
 
     void Start()
     {
         // Initialize UI
         UpdateAllUI();
-        UIManager.Instance.ShowDialogue("This assignment gives you practical experience designing and implementing Blueprint Interfaces, a core communication pattern used in scalable, professional Unreal Engine projects. You’ll create your own interface, define its functions, and implement it across multiple actors to build a modular, reusable interaction system.");
+
     }
     
     void OnEnable()
@@ -33,6 +48,7 @@ public class GameManager : Singleton<GameManager>
         GameEvents.OnCheckpointActivated += OnCheckpointActivated;
         GameEvents.OnPlayerDeath += HandlePlayerDeath;
         GameEvents.OnPlayerInsane += HandlePlayerInsane;
+        GameEvents.OnGameComplete += HandleGameComplete;
     }
     
     void OnDisable()
@@ -41,6 +57,7 @@ public class GameManager : Singleton<GameManager>
         GameEvents.OnCheckpointActivated -= OnCheckpointActivated;
         GameEvents.OnPlayerDeath -= HandlePlayerDeath;
         GameEvents.OnPlayerInsane -= HandlePlayerInsane;
+        GameEvents.OnGameComplete -= HandleGameComplete;
     }
 
     // Change Oxygen
@@ -80,6 +97,7 @@ public class GameManager : Singleton<GameManager>
     {
         GameEvents.TriggerOxygenChanged(CurrentOxygen / maxOxygen);
         GameEvents.TriggerSanityChanged(CurrentSanity / maxSanity);
+        GameEvents.TriggerScareChargesChanged(CurrentScareCharges, maxScareCharges);
     }
     
     #region Checkpoint System
@@ -87,6 +105,19 @@ public class GameManager : Singleton<GameManager>
     private void OnCheckpointActivated(DivingBell checkpoint)
     {
         currentCheckpoint = checkpoint;
+        
+        // Diving Bell激活时恢复一次scare次数（最多3次）
+        if (CurrentScareCharges < maxScareCharges)
+        {
+            CurrentScareCharges++;
+            SaveScareCharges();
+            GameEvents.TriggerScareChargesChanged(CurrentScareCharges, maxScareCharges);
+            Debug.Log($"Diving Bell activated! Scare charge restored to {CurrentScareCharges}/{maxScareCharges}");
+        }
+        
+        // 保存当前的scare次数到checkpoint
+        checkpointScareCharges = CurrentScareCharges;
+        
         Debug.Log($"Current checkpoint set to: {checkpoint.name}");
     }
     
@@ -107,6 +138,10 @@ public class GameManager : Singleton<GameManager>
         // restore player stats
         CurrentOxygen = maxOxygen;
         CurrentSanity = maxSanity;
+        
+        // 恢复checkpoint保存的scare次数，而不是最大值
+        CurrentScareCharges = checkpointScareCharges;
+        
         UpdateAllUI();
         
         // get respawn position
@@ -120,8 +155,114 @@ public class GameManager : Singleton<GameManager>
     
     public void SetDefaultRespawnPosition(Vector3 position)
     {
+        currentCheckpoint = null;
         defaultRespawnPosition = position;
     }
     
+    // 重置游戏状态，用于开始新游戏
+    public void ResetGame()
+    {
+        CurrentOxygen = maxOxygen;
+        CurrentSanity = maxSanity;
+        CurrentScareCharges = maxScareCharges;
+        checkpointScareCharges = maxScareCharges;
+        
+        currentCheckpoint = null;
+        collectedTreasures.Clear();
+        
+        // 保存初始的scare次数到PlayerPrefs
+        PlayerPrefs.SetInt("ScareCharges", maxScareCharges);
+        PlayerPrefs.Save();
+        
+        UpdateAllUI();
+        GameEvents.TriggerPlayerRespawn(defaultRespawnPosition);
+        
+    }
+    
+    // 恢复玩家满状态（用于手动切换关卡/调试）
+    public void RestoreFullStats()
+    {
+        CurrentOxygen = maxOxygen;
+        CurrentSanity = maxSanity;
+        UpdateAllUI();
+    }
+    
     #endregion
+    
+    #region Scare System
+    
+    // 检查是否还有Scare次数
+    public bool HasScareCharges()
+    {
+        return CurrentScareCharges > 0;
+    }
+    
+    // 使用一次Scare次数
+    public bool UseScareCharge()
+    {
+        if (CurrentScareCharges > 0)
+        {
+            CurrentScareCharges--;
+            SaveScareCharges();
+            GameEvents.TriggerScareChargesChanged(CurrentScareCharges, maxScareCharges);
+            Debug.Log($"Scare charge used. Remaining: {CurrentScareCharges}/{maxScareCharges}");
+            return true;
+        }
+        else
+        {
+            Debug.LogWarning("No scare charges remaining!");
+            return false;
+        }
+    }
+    
+    // 重置Scare次数（用于特殊情况，如回到checkpoint）
+    public void ResetScareCharges()
+    {
+        CurrentScareCharges = maxScareCharges;
+        SaveScareCharges();
+        GameEvents.TriggerScareChargesChanged(CurrentScareCharges, maxScareCharges);
+    }
+    
+    // 保存Scare次数到PlayerPrefs
+    private void SaveScareCharges()
+    {
+        PlayerPrefs.SetInt("ScareCharges", CurrentScareCharges);
+        PlayerPrefs.Save();
+    }
+    
+    #endregion
+    
+    #region Treasure System
+    
+    // 添加收集的宝藏
+    public void AddTreasure(string treasureName)
+    {
+        if (string.IsNullOrEmpty(treasureName)) return;
+        
+        if (collectedTreasures.Add(treasureName))
+        {
+            Debug.Log($"Treasure collected: {treasureName}");
+            GameEvents.TriggerTreasureCollected(treasureName);
+        }
+    }
+    
+    // 检查是否拥有指定宝藏
+    public bool HasTreasure(string treasureName)
+    {
+        return !string.IsNullOrEmpty(treasureName) && collectedTreasures.Contains(treasureName);
+    }
+    
+    // 获取已收集的宝藏数量
+    public int GetTreasureCount()
+    {
+        return collectedTreasures.Count;
+    }
+    
+    #endregion
+
+
+    private void HandleGameComplete()
+    {
+        if (gameOverPanel != null) {gameOverPanel.SetActive(true);}
+    }
 }
