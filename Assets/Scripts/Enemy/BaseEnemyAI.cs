@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEngine.AI;
-using System.Threading.Tasks;
+using System.Collections;
 
 public enum EnemyState { Patrol, Chase, Attack }
 public enum PatrolType { RandomPoint, Waypoints }
@@ -137,7 +137,7 @@ public class BaseEnemyAI : MonoBehaviour
         if (dist <= attackRange)
         {
             if (stopMoveWhileAttacking) agent.isStopped = true;
-            if (Time.time >= lastAttackTime + attackCooldown) _ = PerformAttackAsync();
+            if (Time.time >= lastAttackTime + attackCooldown) StartCoroutine(PerformAttackCoroutine());
         }
         else // 追击逻辑
         {
@@ -156,28 +156,27 @@ public class BaseEnemyAI : MonoBehaviour
 
     // --- Actions ---
 
-    private async Task PerformAttackAsync()
+    private System.Collections.IEnumerator PerformAttackCoroutine()
     {
-        if (isAttacking || destroyCancellationToken.IsCancellationRequested) return;
+        if (isAttacking) yield break;
         
         isAttacking = true;
         lastAttackTime = Time.time;
         if (anim) anim.SetTrigger("Attack");
 
-        try
+        // 等待伤害延迟
+        yield return new WaitForSeconds(damageDelay);
+        
+        // 伤害判定
+        if (playerT && Vector2.Distance(transform.position, playerT.position) <= attackRange + 0.5f)
         {
-            await Task.Delay((int)(damageDelay * 1000), destroyCancellationToken);
-            
-            // 伤害判定
-            if (playerT && Vector2.Distance(transform.position, playerT.position) <= attackRange + 0.5f)
-            {
-                GameManager.Instance?.ChangeOxygen(-attackDamage);
-                GameEvents.TriggerPlayerHit(attackDamage); // 触发摄像机震动
-                Debug.Log("Hit Player!");
-            }
-            await Task.Delay(500, destroyCancellationToken); // 后摇
+            GameManager.Instance?.ChangeOxygen(-attackDamage);
+            GameEvents.TriggerPlayerHit(attackDamage); // 触发摄像机震动
+            Debug.Log("Hit Player!");
         }
-        catch (TaskCanceledException) { /* 忽略销毁时的取消 */ }
+        
+        // 后摇
+        yield return new WaitForSeconds(0.5f);
 
         isAttacking = false;
         if (agent && agent.enabled && stopMoveWhileAttacking) agent.isStopped = false;

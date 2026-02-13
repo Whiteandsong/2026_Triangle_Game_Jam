@@ -146,6 +146,8 @@ public class MenuManager : MonoBehaviour
         PlayButtonClickSound();
         #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
+        #elif UNITY_WEBGL
+        Application.OpenURL("https://waterdu.itch.io/ego-submersion"); // 替换成你的主页
         #else
         Application.Quit();
         #endif
