@@ -49,6 +49,7 @@ public class GameManager : Singleton<GameManager>
         GameEvents.OnPlayerDeath += HandlePlayerDeath;
         GameEvents.OnPlayerInsane += HandlePlayerInsane;
         GameEvents.OnGameComplete += HandleGameComplete;
+        GameEvents.OnLevelStarted += OnLevelStarted;
     }
     
     void OnDisable()
@@ -58,6 +59,7 @@ public class GameManager : Singleton<GameManager>
         GameEvents.OnPlayerDeath -= HandlePlayerDeath;
         GameEvents.OnPlayerInsane -= HandlePlayerInsane;
         GameEvents.OnGameComplete -= HandleGameComplete;
+        GameEvents.OnLevelStarted -= OnLevelStarted;
     }
 
     // Change Oxygen
@@ -121,6 +123,14 @@ public class GameManager : Singleton<GameManager>
         Debug.Log($"Current checkpoint set to: {checkpoint.name}");
     }
     
+    private void OnLevelStarted(int levelIndex)
+    {
+        // 关卡切换时保存当前的scare次数
+        SaveScareCharges();
+        checkpointScareCharges = CurrentScareCharges;
+        Debug.Log($"Level {levelIndex} started. Scare charges saved: {CurrentScareCharges}/{maxScareCharges}");
+    }
+    
     private void HandlePlayerDeath()
     {
         Debug.Log("Player died, preparing respawn...");
@@ -137,7 +147,8 @@ public class GameManager : Singleton<GameManager>
     {
         // restore player stats
         CurrentOxygen = maxOxygen;
-        CurrentSanity = maxSanity;
+        //不恢复sanity
+        // CurrentSanity = maxSanity;
         
         // 恢复checkpoint保存的scare次数，而不是最大值
         CurrentScareCharges = checkpointScareCharges;

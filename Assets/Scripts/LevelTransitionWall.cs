@@ -4,12 +4,10 @@ using UnityEngine;
 public class LevelTransitionWall : MonoBehaviour
 {
     [Header("Transition Settings")]
-    [Tooltip("如果是通往结局的墙，勾选 isNextLevelWall")]
     [SerializeField] private bool isNextLevelWall = true;
     [SerializeField] private int targetLevelIndex = -1;
 
     [Header("Requirements (For Game End Only)")]
-    [Tooltip("只有在通往结局(没有下一关)时，才会检查这个字段。普通关卡会读取下一关LevelData里的要求。")]
     [SerializeField] private string requiredTreasureForEnding = ""; 
     
     [Header("Feedback")]
@@ -36,15 +34,7 @@ public class LevelTransitionWall : MonoBehaviour
         int targetLevel = isNextLevelWall ? currentIdx + 1 : targetLevelIndex;
         
         // 获取总关卡数
-        // 注意：如果你没在 LevelManager 加 TotalLevelCount 属性，这里可以用 levels.Length 替代，但建议加上
-        // 这里我假设你按照上一步在 LevelManager 加了 TotalLevelCount
-        // 如果报错，请把 LevelManager.Instance.TotalLevelCount 换成 LevelManager.Instance.levels.Length (如果levels是public的话)
         int totalLevels = LevelManager.Instance.TotalLevelCount; 
-
-        // ================================================================
-        // 分情况讨论：是结局？还是普通关卡？
-        // ================================================================
-
         // 【情况 A：通往结局 (Target Index 超出了数组范围)】
         if (isNextLevelWall && targetLevel >= totalLevels)
         {

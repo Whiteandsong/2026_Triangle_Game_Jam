@@ -9,7 +9,7 @@ public class DivingBell : MonoBehaviour, IInteractable
     
     [Header("Recovery Settings")]
     [SerializeField] private float oxygenRecoveryRate = 5f;
-    [SerializeField] private float sanityRecoveryRate = 3f;
+    //[SerializeField] private float sanityRecoveryRate = 3f;
     [SerializeField] private bool enableRecovery = true;
     
     [Header("Visual Feedback")]

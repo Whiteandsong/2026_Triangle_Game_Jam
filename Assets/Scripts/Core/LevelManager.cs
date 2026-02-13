@@ -140,9 +140,7 @@ public class LevelManager : Singleton<LevelManager>
     }
 
     private IEnumerator ProcessLevelTransition(int targetIndex)
-    {
-        // =================步骤 1: 冻结与黑幕开始=================
-        
+    {        
         // 1.1 立即暂停时间 (防止怪物攻击)
         Time.timeScale = 0f;
         
@@ -156,7 +154,6 @@ public class LevelManager : Singleton<LevelManager>
         }
 
         // 1.3 播放 Exit 动画 (屏幕变黑)
-        // 警告：确保你的 UI Animator UpdateMode 设置为 Unscaled Time，否则这里动画不动！
         float animDuration = 1f;
         if (transitionUI)
         {
@@ -164,19 +161,13 @@ public class LevelManager : Singleton<LevelManager>
             animDuration = transitionUI.transitionDuration;
         }
         
-        // 1.4 等待变黑 (使用 Realtime，因为 timeScale 是 0)
-        yield return new WaitForSecondsRealtime(animDuration);
-
-
-        // =================步骤 2: 在黑幕中搬运玩家=================
-        
-        // 此时屏幕完全黑了，玩家看不见，现在才移动玩家位置！
-        
+        // 1.4 等待变黑
+        yield return new WaitForSecondsRealtime(animDuration);     
         // 2.1 扣除理智
         if (GameManager.Instance)
             GameManager.Instance.ChangeSanity(-GameManager.Instance.MaxSanity * 0.25f);
             
-        // 2.2 调用 LoadLevel 移动位置 (这是核心移动代码)
+        // 2.2 调用 LoadLevel 移动位置
         LoadLevel(targetIndex, showDialogue: true, restoreStats: false);
         
         // 2.3 处理过场对话
@@ -190,17 +181,19 @@ public class LevelManager : Singleton<LevelManager>
         yield return null; 
 
 
-        // =================步骤 3: 黑幕结束与解冻=================
-
         // 3.1 播放 Enter 动画 (屏幕变亮)
         if (transitionUI) transitionUI.PlayEnterAnimation();
 
         // 3.2 等待变亮动画播放完毕 (玩家此时已在出生点，但游戏仍暂停)
         yield return new WaitForSecondsRealtime(animDuration);
 
-        // 3.3 动画结束，解冻时间，恢复玩家控制
+        // 3.3 解冻时间
         Time.timeScale = 1f;
         
+        // 3.4 等待一帧，让物理系统和输入系统完全同步
+        yield return null;
+        
+        // 3.5 恢复玩家控制
         if (player)
         {
             var pc = player.GetComponent<PlayerController>();
@@ -208,7 +201,6 @@ public class LevelManager : Singleton<LevelManager>
         }
     }
 
-    // --- 结局流程 ---
 
     public void TriggerGameEnd()
     {
@@ -217,8 +209,7 @@ public class LevelManager : Singleton<LevelManager>
 
     private IEnumerator ProcessGameEndSequence()
     {
-        Time.timeScale = 0f;
-        
+        // 1. 禁用玩家控制但保持时间流动
         if (player)
         {
             var pc = player.GetComponent<PlayerController>();
@@ -226,6 +217,7 @@ public class LevelManager : Singleton<LevelManager>
             if (player.TryGetComponent<Rigidbody2D>(out var rb)) rb.linearVelocity = Vector2.zero;
         }
 
+        // 2. 播放黑幕动画（时间仍在流动）
         float waitTime = 1f;
         if (transitionUI)
         {
@@ -233,9 +225,16 @@ public class LevelManager : Singleton<LevelManager>
             waitTime = transitionUI.transitionDuration;
         }
 
-        yield return new WaitForSecondsRealtime(waitTime);
+        yield return new WaitForSeconds(waitTime);
 
-        // 保持黑屏并触发 UI
+        // 3. 扣除理智值（与正常关卡切换一致）
+        if (GameManager.Instance)
+            GameManager.Instance.ChangeSanity(-GameManager.Instance.MaxSanity * 0.25f);
+
+        // 4. 现在才暂停时间
+        Time.timeScale = 0f;
+
+        // 5. 保持黑屏并触发 UI
         GameEvents.TriggerGameComplete();
     }
 

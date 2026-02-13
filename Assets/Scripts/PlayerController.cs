@@ -12,7 +12,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float riseForce = 30f;
     [SerializeField] private float sinkForce = 30f;
     [SerializeField] private float maxVerticalSpeed = 3f;
-    [SerializeField] private float oxygenConsumptionSinkRate = 1f;
+    [SerializeField] private float oxygenConsumptionVerticalRate = 1f;
 
     [Header("Interaction Settings")]
     [SerializeField] private KeyCode interactKey = KeyCode.E;
@@ -27,6 +27,11 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private RuntimeAnimatorController defaultAnimatorController;
     [SerializeField] private RuntimeAnimatorController level4AnimatorController;
     
+    [Header("Scare Settings")]
+    [SerializeField] private float scareDuration = 5f;
+    private float scareTimer = 0f;
+
+
     [Header("Audio Settings")]
     [SerializeField] private AudioClip hitSoundEffect;
     [SerializeField] private AudioClip deathSoundEffect;
@@ -43,8 +48,6 @@ public class PlayerController : MonoBehaviour
     
     // Timers (替换协程和Invoke)
     private float hitFlashTimer = 0f;
-    private float scareTimer = 0f;
-    private float scareDuration = 5f;
 
     // Hiding State
     public bool IsHiding { get; private set; } = false;
@@ -224,11 +227,12 @@ public class PlayerController : MonoBehaviour
 
         float dt = Time.deltaTime;
         
+        // 左右移动消耗
         if (currentXInput != 0)
             GameManager.Instance.ChangeOxygen(-oxygenConsumptionRate * dt);
 
-        if (isSinkingInput)
-            GameManager.Instance.ChangeOxygen(-oxygenConsumptionSinkRate * dt);
+        // 上下移动消耗（无论上升还是下沉都消耗）
+        GameManager.Instance.ChangeOxygen(-oxygenConsumptionVerticalRate * dt);
     }
 
     private void ApplyMovementForces()
