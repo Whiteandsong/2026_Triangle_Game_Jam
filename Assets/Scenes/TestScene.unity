@@ -132,6 +132,18 @@ PrefabInstance:
       value: fish5_1 (1)
       objectReference: {fileID: 0}
     - target: {fileID: 4479465151169508384, guid: bba04b90ab8ee3844b837e7dd2bfd053, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.55
+      objectReference: {fileID: 0}
+    - target: {fileID: 4479465151169508384, guid: bba04b90ab8ee3844b837e7dd2bfd053, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.55
+      objectReference: {fileID: 0}
+    - target: {fileID: 4479465151169508384, guid: bba04b90ab8ee3844b837e7dd2bfd053, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.55
+      objectReference: {fileID: 0}
+    - target: {fileID: 4479465151169508384, guid: bba04b90ab8ee3844b837e7dd2bfd053, type: 3}
       propertyPath: m_LocalPosition.x
       value: -4.4000006
       objectReference: {fileID: 0}
@@ -181,15 +193,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7163088797601532192, guid: bba04b90ab8ee3844b837e7dd2bfd053, type: 3}
       propertyPath: detectRange
-      value: 10
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 7163088797601532192, guid: bba04b90ab8ee3844b837e7dd2bfd053, type: 3}
       propertyPath: patrolRange
       value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 7163088797601532192, guid: bba04b90ab8ee3844b837e7dd2bfd053, type: 3}
+      propertyPath: rotateSpeed
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 7163088797601532192, guid: bba04b90ab8ee3844b837e7dd2bfd053, type: 3}
       propertyPath: attackDamage
-      value: 20
+      value: 25
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1272,15 +1288,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4340579244792058428, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.8000001
+      value: 0.8499999
       objectReference: {fileID: 0}
     - target: {fileID: 4340579244792058428, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.8000001
+      value: 0.8499999
       objectReference: {fileID: 0}
     - target: {fileID: 4340579244792058428, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.8000001
+      value: 0.8499999
       objectReference: {fileID: 0}
     - target: {fileID: 4340579244792058428, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1328,15 +1344,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5153048525615089942, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
       propertyPath: patrolRange
-      value: 10
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 5153048525615089942, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
       propertyPath: attackDamage
-      value: 10
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 5153048525615089942, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
+      propertyPath: waitTimeAtPoint
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5153048525615089942, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
       propertyPath: maxChaseDistFromSpawn
-      value: 15
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 5153048525615089942, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
       propertyPath: stopMoveWhileAttacking
@@ -1356,7 +1376,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6189668728142872281, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
       propertyPath: suctionForce
-      value: 20
+      value: 25
       objectReference: {fileID: 0}
     - target: {fileID: 7517528506156357142, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
       propertyPath: m_Name
@@ -1806,6 +1826,18 @@ PrefabInstance:
     m_TransformParent: {fileID: 149950365}
     m_Modifications:
     - target: {fileID: 4340579244792058428, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.84999996
+      objectReference: {fileID: 0}
+    - target: {fileID: 4340579244792058428, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.84999996
+      objectReference: {fileID: 0}
+    - target: {fileID: 4340579244792058428, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.84999996
+      objectReference: {fileID: 0}
+    - target: {fileID: 4340579244792058428, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
       propertyPath: m_LocalPosition.x
       value: 7.7
       objectReference: {fileID: 0}
@@ -1847,14 +1879,26 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5153048525615089942, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
       propertyPath: chaseSpeed
-      value: 4
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 5153048525615089942, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
       propertyPath: detectRange
-      value: 10
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 5153048525615089942, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
       propertyPath: patrolRange
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 5153048525615089942, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
+      propertyPath: attackDamage
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 5153048525615089942, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
+      propertyPath: waitTimeAtPoint
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5153048525615089942, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
+      propertyPath: maxChaseDistFromSpawn
       value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 5794262191602718978, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
@@ -1863,7 +1907,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6189668728142872281, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
       propertyPath: suctionForce
-      value: 20
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 7517528506156357142, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
       propertyPath: m_Name
@@ -2175,16 +2219,20 @@ PrefabInstance:
       value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 5153048525615089942, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
+      propertyPath: detectRange
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 5153048525615089942, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
       propertyPath: patrolRange
-      value: 10
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 5153048525615089942, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
       propertyPath: attackDamage
-      value: 10
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 5153048525615089942, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
       propertyPath: maxChaseDistFromSpawn
-      value: 15
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 5153048525615089942, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
       propertyPath: stopMoveWhileAttacking
@@ -2204,7 +2252,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6189668728142872281, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
       propertyPath: suctionForce
-      value: 20
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 7517528506156357142, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
       propertyPath: m_Name
@@ -2356,12 +2404,16 @@ PrefabInstance:
       value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 9212626533189652876, guid: bac796dfbf4f75544a513a8b6cc51546, type: 3}
+      propertyPath: detectRange
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 9212626533189652876, guid: bac796dfbf4f75544a513a8b6cc51546, type: 3}
       propertyPath: stopDistance
       value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 9212626533189652876, guid: bac796dfbf4f75544a513a8b6cc51546, type: 3}
       propertyPath: stopChaseDist
-      value: 8
+      value: 12
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -2492,7 +2544,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 6b7aaf5aee5e63f4aba5c980f5a373bc, type: 3}
+  m_Sprite: {fileID: 9021585184963666049, guid: 8a25c249bc3a6a24db6590a0d5582841, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -2559,7 +2611,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4297468143837111098, guid: a10ffe4ec5e227d49af8778ab5f21d5f, type: 3}
       propertyPath: stopDistance
-      value: 5
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 4297468143837111098, guid: a10ffe4ec5e227d49af8778ab5f21d5f, type: 3}
       propertyPath: stopChaseDist
@@ -2571,7 +2623,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4297468143837111098, guid: a10ffe4ec5e227d49af8778ab5f21d5f, type: 3}
       propertyPath: maxChaseDistFromSpawn
-      value: 12
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 4297468143837111098, guid: a10ffe4ec5e227d49af8778ab5f21d5f, type: 3}
       propertyPath: stopMoveWhileAttacking
@@ -2937,7 +2989,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7163088797601532192, guid: bba04b90ab8ee3844b837e7dd2bfd053, type: 3}
       propertyPath: chaseSpeed
-      value: 6
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 7163088797601532192, guid: bba04b90ab8ee3844b837e7dd2bfd053, type: 3}
       propertyPath: attackRange
@@ -2949,11 +3001,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7163088797601532192, guid: bba04b90ab8ee3844b837e7dd2bfd053, type: 3}
       propertyPath: detectRange
-      value: 10
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 7163088797601532192, guid: bba04b90ab8ee3844b837e7dd2bfd053, type: 3}
       propertyPath: patrolRange
       value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 7163088797601532192, guid: bba04b90ab8ee3844b837e7dd2bfd053, type: 3}
+      propertyPath: rotateSpeed
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 7163088797601532192, guid: bba04b90ab8ee3844b837e7dd2bfd053, type: 3}
       propertyPath: attackDamage
@@ -2965,7 +3021,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7163088797601532192, guid: bba04b90ab8ee3844b837e7dd2bfd053, type: 3}
       propertyPath: maxChaseDistFromSpawn
-      value: 18
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 7163088797601532192, guid: bba04b90ab8ee3844b837e7dd2bfd053, type: 3}
       propertyPath: stopMoveWhileAttacking
@@ -3000,6 +3056,18 @@ PrefabInstance:
     - target: {fileID: 614913760764313814, guid: bba04b90ab8ee3844b837e7dd2bfd053, type: 3}
       propertyPath: m_Name
       value: fish5_1 (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 4479465151169508384, guid: bba04b90ab8ee3844b837e7dd2bfd053, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.55
+      objectReference: {fileID: 0}
+    - target: {fileID: 4479465151169508384, guid: bba04b90ab8ee3844b837e7dd2bfd053, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.55
+      objectReference: {fileID: 0}
+    - target: {fileID: 4479465151169508384, guid: bba04b90ab8ee3844b837e7dd2bfd053, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.55
       objectReference: {fileID: 0}
     - target: {fileID: 4479465151169508384, guid: bba04b90ab8ee3844b837e7dd2bfd053, type: 3}
       propertyPath: m_LocalPosition.x
@@ -3051,15 +3119,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7163088797601532192, guid: bba04b90ab8ee3844b837e7dd2bfd053, type: 3}
       propertyPath: detectRange
-      value: 10
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 7163088797601532192, guid: bba04b90ab8ee3844b837e7dd2bfd053, type: 3}
       propertyPath: patrolRange
       value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 7163088797601532192, guid: bba04b90ab8ee3844b837e7dd2bfd053, type: 3}
+      propertyPath: rotateSpeed
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 7163088797601532192, guid: bba04b90ab8ee3844b837e7dd2bfd053, type: 3}
       propertyPath: attackDamage
-      value: 20
+      value: 25
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -3675,6 +3747,26 @@ PrefabInstance:
       propertyPath: m_Name
       value: eeel_1 (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 3060492303054140372, guid: 1c7f2d43ed6e4c44480324a7991ef610, type: 3}
+      propertyPath: chaseSpeed
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 3060492303054140372, guid: 1c7f2d43ed6e4c44480324a7991ef610, type: 3}
+      propertyPath: detectRange
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 3060492303054140372, guid: 1c7f2d43ed6e4c44480324a7991ef610, type: 3}
+      propertyPath: patrolRange
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 3060492303054140372, guid: 1c7f2d43ed6e4c44480324a7991ef610, type: 3}
+      propertyPath: patrolSpeed
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3060492303054140372, guid: 1c7f2d43ed6e4c44480324a7991ef610, type: 3}
+      propertyPath: maxChaseDistFromSpawn
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5239776458007916294, guid: 1c7f2d43ed6e4c44480324a7991ef610, type: 3}
       propertyPath: m_LocalPosition.x
       value: -5.2
@@ -3755,15 +3847,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3322696375985292710, guid: d38bd88d2c5887b4d8b6ba886f6e63a0, type: 3}
       propertyPath: damageDelay
-      value: 0.3
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 3322696375985292710, guid: d38bd88d2c5887b4d8b6ba886f6e63a0, type: 3}
       propertyPath: detectRange
-      value: 10
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 3322696375985292710, guid: d38bd88d2c5887b4d8b6ba886f6e63a0, type: 3}
       propertyPath: patrolRange
-      value: 20
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 3322696375985292710, guid: d38bd88d2c5887b4d8b6ba886f6e63a0, type: 3}
+      propertyPath: attackDamage
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 3322696375985292710, guid: d38bd88d2c5887b4d8b6ba886f6e63a0, type: 3}
       propertyPath: dashDetectRange
@@ -3771,7 +3867,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3322696375985292710, guid: d38bd88d2c5887b4d8b6ba886f6e63a0, type: 3}
       propertyPath: maxChaseDistFromSpawn
-      value: 12
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 3322696375985292710, guid: d38bd88d2c5887b4d8b6ba886f6e63a0, type: 3}
       propertyPath: stopMoveWhileAttacking
@@ -4118,6 +4214,10 @@ PrefabInstance:
     - target: {fileID: 3322696375985292710, guid: d38bd88d2c5887b4d8b6ba886f6e63a0, type: 3}
       propertyPath: patrolRange
       value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 3322696375985292710, guid: d38bd88d2c5887b4d8b6ba886f6e63a0, type: 3}
+      propertyPath: attackDamage
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 3322696375985292710, guid: d38bd88d2c5887b4d8b6ba886f6e63a0, type: 3}
       propertyPath: dashDetectRange
@@ -4537,15 +4637,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3322696375985292710, guid: d38bd88d2c5887b4d8b6ba886f6e63a0, type: 3}
       propertyPath: damageDelay
-      value: 0.3
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 3322696375985292710, guid: d38bd88d2c5887b4d8b6ba886f6e63a0, type: 3}
       propertyPath: detectRange
-      value: 5
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 3322696375985292710, guid: d38bd88d2c5887b4d8b6ba886f6e63a0, type: 3}
       propertyPath: patrolRange
-      value: 5
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 3322696375985292710, guid: d38bd88d2c5887b4d8b6ba886f6e63a0, type: 3}
+      propertyPath: attackDamage
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 3322696375985292710, guid: d38bd88d2c5887b4d8b6ba886f6e63a0, type: 3}
       propertyPath: dashDetectRange
@@ -4553,7 +4657,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3322696375985292710, guid: d38bd88d2c5887b4d8b6ba886f6e63a0, type: 3}
       propertyPath: maxChaseDistFromSpawn
-      value: 15
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 3322696375985292710, guid: d38bd88d2c5887b4d8b6ba886f6e63a0, type: 3}
       propertyPath: stopMoveWhileAttacking
@@ -4992,6 +5096,18 @@ PrefabInstance:
       value: fish5_1
       objectReference: {fileID: 0}
     - target: {fileID: 4479465151169508384, guid: bba04b90ab8ee3844b837e7dd2bfd053, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.55
+      objectReference: {fileID: 0}
+    - target: {fileID: 4479465151169508384, guid: bba04b90ab8ee3844b837e7dd2bfd053, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.55
+      objectReference: {fileID: 0}
+    - target: {fileID: 4479465151169508384, guid: bba04b90ab8ee3844b837e7dd2bfd053, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.55
+      objectReference: {fileID: 0}
+    - target: {fileID: 4479465151169508384, guid: bba04b90ab8ee3844b837e7dd2bfd053, type: 3}
       propertyPath: m_LocalPosition.x
       value: 7.6
       objectReference: {fileID: 0}
@@ -5041,15 +5157,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7163088797601532192, guid: bba04b90ab8ee3844b837e7dd2bfd053, type: 3}
       propertyPath: detectRange
-      value: 10
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 7163088797601532192, guid: bba04b90ab8ee3844b837e7dd2bfd053, type: 3}
       propertyPath: patrolRange
       value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 7163088797601532192, guid: bba04b90ab8ee3844b837e7dd2bfd053, type: 3}
+      propertyPath: rotateSpeed
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 7163088797601532192, guid: bba04b90ab8ee3844b837e7dd2bfd053, type: 3}
       propertyPath: attackDamage
-      value: 20
+      value: 25
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -5474,6 +5594,26 @@ PrefabInstance:
     - target: {fileID: 2428575518824272108, guid: 1c7f2d43ed6e4c44480324a7991ef610, type: 3}
       propertyPath: m_Name
       value: eeel_1 (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 3060492303054140372, guid: 1c7f2d43ed6e4c44480324a7991ef610, type: 3}
+      propertyPath: chaseSpeed
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 3060492303054140372, guid: 1c7f2d43ed6e4c44480324a7991ef610, type: 3}
+      propertyPath: detectRange
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 3060492303054140372, guid: 1c7f2d43ed6e4c44480324a7991ef610, type: 3}
+      propertyPath: patrolRange
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 3060492303054140372, guid: 1c7f2d43ed6e4c44480324a7991ef610, type: 3}
+      propertyPath: patrolSpeed
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3060492303054140372, guid: 1c7f2d43ed6e4c44480324a7991ef610, type: 3}
+      propertyPath: maxChaseDistFromSpawn
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5239776458007916294, guid: 1c7f2d43ed6e4c44480324a7991ef610, type: 3}
       propertyPath: m_LocalPosition.x
@@ -6015,15 +6155,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4340579244792058428, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.8000001
+      value: 0.8499999
       objectReference: {fileID: 0}
     - target: {fileID: 4340579244792058428, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.8000001
+      value: 0.8499999
       objectReference: {fileID: 0}
     - target: {fileID: 4340579244792058428, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.8000001
+      value: 0.8499999
       objectReference: {fileID: 0}
     - target: {fileID: 4340579244792058428, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
       propertyPath: m_LocalPosition.x
@@ -6071,15 +6211,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5153048525615089942, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
       propertyPath: patrolRange
-      value: 10
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 5153048525615089942, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
       propertyPath: attackDamage
-      value: 10
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 5153048525615089942, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
+      propertyPath: waitTimeAtPoint
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5153048525615089942, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
       propertyPath: maxChaseDistFromSpawn
-      value: 15
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 5153048525615089942, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
       propertyPath: stopMoveWhileAttacking
@@ -6099,7 +6243,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6189668728142872281, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
       propertyPath: suctionForce
-      value: 20
+      value: 25
       objectReference: {fileID: 0}
     - target: {fileID: 7517528506156357142, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
       propertyPath: m_Name
@@ -11469,7 +11613,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7163088797601532192, guid: bba04b90ab8ee3844b837e7dd2bfd053, type: 3}
       propertyPath: chaseSpeed
-      value: 6
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 7163088797601532192, guid: bba04b90ab8ee3844b837e7dd2bfd053, type: 3}
       propertyPath: attackRange
@@ -11481,11 +11625,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7163088797601532192, guid: bba04b90ab8ee3844b837e7dd2bfd053, type: 3}
       propertyPath: detectRange
-      value: 10
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 7163088797601532192, guid: bba04b90ab8ee3844b837e7dd2bfd053, type: 3}
       propertyPath: patrolRange
       value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 7163088797601532192, guid: bba04b90ab8ee3844b837e7dd2bfd053, type: 3}
+      propertyPath: rotateSpeed
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 7163088797601532192, guid: bba04b90ab8ee3844b837e7dd2bfd053, type: 3}
       propertyPath: attackDamage
@@ -11497,7 +11645,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7163088797601532192, guid: bba04b90ab8ee3844b837e7dd2bfd053, type: 3}
       propertyPath: maxChaseDistFromSpawn
-      value: 18
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 7163088797601532192, guid: bba04b90ab8ee3844b837e7dd2bfd053, type: 3}
       propertyPath: stopMoveWhileAttacking
@@ -11899,7 +12047,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 712, y: 187}
+  m_AnchoredPosition: {x: 670, y: 292.16}
   m_SizeDelta: {x: 406, y: 262}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &840394011
@@ -12193,7 +12341,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7163088797601532192, guid: bba04b90ab8ee3844b837e7dd2bfd053, type: 3}
       propertyPath: chaseSpeed
-      value: 6
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 7163088797601532192, guid: bba04b90ab8ee3844b837e7dd2bfd053, type: 3}
       propertyPath: attackRange
@@ -12205,11 +12353,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7163088797601532192, guid: bba04b90ab8ee3844b837e7dd2bfd053, type: 3}
       propertyPath: detectRange
-      value: 10
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 7163088797601532192, guid: bba04b90ab8ee3844b837e7dd2bfd053, type: 3}
       propertyPath: patrolRange
       value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 7163088797601532192, guid: bba04b90ab8ee3844b837e7dd2bfd053, type: 3}
+      propertyPath: rotateSpeed
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 7163088797601532192, guid: bba04b90ab8ee3844b837e7dd2bfd053, type: 3}
       propertyPath: attackDamage
@@ -12221,7 +12373,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7163088797601532192, guid: bba04b90ab8ee3844b837e7dd2bfd053, type: 3}
       propertyPath: maxChaseDistFromSpawn
-      value: 18
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 7163088797601532192, guid: bba04b90ab8ee3844b837e7dd2bfd053, type: 3}
       propertyPath: stopMoveWhileAttacking
@@ -13058,15 +13210,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3322696375985292710, guid: d38bd88d2c5887b4d8b6ba886f6e63a0, type: 3}
       propertyPath: damageDelay
-      value: 0.3
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 3322696375985292710, guid: d38bd88d2c5887b4d8b6ba886f6e63a0, type: 3}
       propertyPath: detectRange
-      value: 10
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 3322696375985292710, guid: d38bd88d2c5887b4d8b6ba886f6e63a0, type: 3}
       propertyPath: patrolRange
-      value: 20
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 3322696375985292710, guid: d38bd88d2c5887b4d8b6ba886f6e63a0, type: 3}
+      propertyPath: attackDamage
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 3322696375985292710, guid: d38bd88d2c5887b4d8b6ba886f6e63a0, type: 3}
       propertyPath: dashDetectRange
@@ -13074,7 +13230,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3322696375985292710, guid: d38bd88d2c5887b4d8b6ba886f6e63a0, type: 3}
       propertyPath: maxChaseDistFromSpawn
-      value: 12
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 3322696375985292710, guid: d38bd88d2c5887b4d8b6ba886f6e63a0, type: 3}
       propertyPath: stopMoveWhileAttacking
@@ -13303,16 +13459,20 @@ PrefabInstance:
       value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 5153048525615089942, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
+      propertyPath: detectRange
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 5153048525615089942, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
       propertyPath: patrolRange
-      value: 10
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 5153048525615089942, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
       propertyPath: attackDamage
-      value: 10
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 5153048525615089942, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
       propertyPath: maxChaseDistFromSpawn
-      value: 15
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 5153048525615089942, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
       propertyPath: stopMoveWhileAttacking
@@ -13332,7 +13492,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6189668728142872281, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
       propertyPath: suctionForce
-      value: 20
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 7517528506156357142, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
       propertyPath: m_Name
@@ -13527,7 +13687,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4297468143837111098, guid: a10ffe4ec5e227d49af8778ab5f21d5f, type: 3}
       propertyPath: stopDistance
-      value: 5
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 4297468143837111098, guid: a10ffe4ec5e227d49af8778ab5f21d5f, type: 3}
       propertyPath: stopChaseDist
@@ -13539,7 +13699,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4297468143837111098, guid: a10ffe4ec5e227d49af8778ab5f21d5f, type: 3}
       propertyPath: maxChaseDistFromSpawn
-      value: 12
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 4297468143837111098, guid: a10ffe4ec5e227d49af8778ab5f21d5f, type: 3}
       propertyPath: stopMoveWhileAttacking
@@ -13972,6 +14132,18 @@ PrefabInstance:
     m_TransformParent: {fileID: 149950365}
     m_Modifications:
     - target: {fileID: 4340579244792058428, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.84999996
+      objectReference: {fileID: 0}
+    - target: {fileID: 4340579244792058428, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.84999996
+      objectReference: {fileID: 0}
+    - target: {fileID: 4340579244792058428, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.84999996
+      objectReference: {fileID: 0}
+    - target: {fileID: 4340579244792058428, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
       propertyPath: m_LocalPosition.x
       value: -7.9
       objectReference: {fileID: 0}
@@ -14013,14 +14185,26 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5153048525615089942, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
       propertyPath: chaseSpeed
-      value: 4
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 5153048525615089942, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
       propertyPath: detectRange
-      value: 10
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 5153048525615089942, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
       propertyPath: patrolRange
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 5153048525615089942, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
+      propertyPath: attackDamage
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 5153048525615089942, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
+      propertyPath: waitTimeAtPoint
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5153048525615089942, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
+      propertyPath: maxChaseDistFromSpawn
       value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 5794262191602718978, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
@@ -14029,7 +14213,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6189668728142872281, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
       propertyPath: suctionForce
-      value: 20
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 7517528506156357142, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
       propertyPath: m_Name
@@ -14405,6 +14589,26 @@ PrefabInstance:
     - target: {fileID: 2428575518824272108, guid: 1c7f2d43ed6e4c44480324a7991ef610, type: 3}
       propertyPath: m_Name
       value: eeel_1 (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 3060492303054140372, guid: 1c7f2d43ed6e4c44480324a7991ef610, type: 3}
+      propertyPath: chaseSpeed
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 3060492303054140372, guid: 1c7f2d43ed6e4c44480324a7991ef610, type: 3}
+      propertyPath: detectRange
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 3060492303054140372, guid: 1c7f2d43ed6e4c44480324a7991ef610, type: 3}
+      propertyPath: patrolRange
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 3060492303054140372, guid: 1c7f2d43ed6e4c44480324a7991ef610, type: 3}
+      propertyPath: patrolSpeed
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3060492303054140372, guid: 1c7f2d43ed6e4c44480324a7991ef610, type: 3}
+      propertyPath: maxChaseDistFromSpawn
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5239776458007916294, guid: 1c7f2d43ed6e4c44480324a7991ef610, type: 3}
       propertyPath: m_LocalPosition.x
@@ -14880,7 +15084,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7163088797601532192, guid: bba04b90ab8ee3844b837e7dd2bfd053, type: 3}
       propertyPath: chaseSpeed
-      value: 6
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 7163088797601532192, guid: bba04b90ab8ee3844b837e7dd2bfd053, type: 3}
       propertyPath: attackRange
@@ -14892,11 +15096,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7163088797601532192, guid: bba04b90ab8ee3844b837e7dd2bfd053, type: 3}
       propertyPath: detectRange
-      value: 10
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 7163088797601532192, guid: bba04b90ab8ee3844b837e7dd2bfd053, type: 3}
       propertyPath: patrolRange
       value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 7163088797601532192, guid: bba04b90ab8ee3844b837e7dd2bfd053, type: 3}
+      propertyPath: rotateSpeed
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 7163088797601532192, guid: bba04b90ab8ee3844b837e7dd2bfd053, type: 3}
       propertyPath: attackDamage
@@ -14908,7 +15116,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7163088797601532192, guid: bba04b90ab8ee3844b837e7dd2bfd053, type: 3}
       propertyPath: maxChaseDistFromSpawn
-      value: 18
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 7163088797601532192, guid: bba04b90ab8ee3844b837e7dd2bfd053, type: 3}
       propertyPath: stopMoveWhileAttacking
@@ -15906,6 +16114,18 @@ PrefabInstance:
     m_TransformParent: {fileID: 149950365}
     m_Modifications:
     - target: {fileID: 4340579244792058428, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.84999996
+      objectReference: {fileID: 0}
+    - target: {fileID: 4340579244792058428, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.84999996
+      objectReference: {fileID: 0}
+    - target: {fileID: 4340579244792058428, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.84999996
+      objectReference: {fileID: 0}
+    - target: {fileID: 4340579244792058428, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
       propertyPath: m_LocalPosition.x
       value: 8.5
       objectReference: {fileID: 0}
@@ -15947,14 +16167,26 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5153048525615089942, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
       propertyPath: chaseSpeed
-      value: 4
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 5153048525615089942, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
       propertyPath: detectRange
-      value: 10
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 5153048525615089942, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
       propertyPath: patrolRange
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 5153048525615089942, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
+      propertyPath: attackDamage
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 5153048525615089942, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
+      propertyPath: waitTimeAtPoint
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5153048525615089942, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
+      propertyPath: maxChaseDistFromSpawn
       value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 5794262191602718978, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
@@ -15963,7 +16195,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6189668728142872281, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
       propertyPath: suctionForce
-      value: 20
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 7517528506156357142, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
       propertyPath: m_Name
@@ -16201,12 +16433,16 @@ PrefabInstance:
       value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 9212626533189652876, guid: bac796dfbf4f75544a513a8b6cc51546, type: 3}
+      propertyPath: detectRange
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 9212626533189652876, guid: bac796dfbf4f75544a513a8b6cc51546, type: 3}
       propertyPath: stopDistance
       value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 9212626533189652876, guid: bac796dfbf4f75544a513a8b6cc51546, type: 3}
       propertyPath: stopChaseDist
-      value: 8
+      value: 12
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -16248,23 +16484,31 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3322696375985292710, guid: d38bd88d2c5887b4d8b6ba886f6e63a0, type: 3}
       propertyPath: damageDelay
-      value: 0.3
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 3322696375985292710, guid: d38bd88d2c5887b4d8b6ba886f6e63a0, type: 3}
       propertyPath: detectRange
-      value: 5
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 3322696375985292710, guid: d38bd88d2c5887b4d8b6ba886f6e63a0, type: 3}
       propertyPath: patrolRange
-      value: 5
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 3322696375985292710, guid: d38bd88d2c5887b4d8b6ba886f6e63a0, type: 3}
+      propertyPath: attackDamage
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 3322696375985292710, guid: d38bd88d2c5887b4d8b6ba886f6e63a0, type: 3}
+      propertyPath: dashCooldown
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 3322696375985292710, guid: d38bd88d2c5887b4d8b6ba886f6e63a0, type: 3}
       propertyPath: dashDetectRange
-      value: 5
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 3322696375985292710, guid: d38bd88d2c5887b4d8b6ba886f6e63a0, type: 3}
       propertyPath: maxChaseDistFromSpawn
-      value: 15
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 3322696375985292710, guid: d38bd88d2c5887b4d8b6ba886f6e63a0, type: 3}
       propertyPath: stopMoveWhileAttacking
@@ -16449,6 +16693,10 @@ PrefabInstance:
     - target: {fileID: 3322696375985292710, guid: d38bd88d2c5887b4d8b6ba886f6e63a0, type: 3}
       propertyPath: patrolRange
       value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 3322696375985292710, guid: d38bd88d2c5887b4d8b6ba886f6e63a0, type: 3}
+      propertyPath: attackDamage
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 3322696375985292710, guid: d38bd88d2c5887b4d8b6ba886f6e63a0, type: 3}
       propertyPath: dashDetectRange
@@ -17527,12 +17775,24 @@ PrefabInstance:
     m_TransformParent: {fileID: 149950365}
     m_Modifications:
     - target: {fileID: 4340579244792058428, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.84999996
+      objectReference: {fileID: 0}
+    - target: {fileID: 4340579244792058428, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.84999996
+      objectReference: {fileID: 0}
+    - target: {fileID: 4340579244792058428, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.84999996
+      objectReference: {fileID: 0}
+    - target: {fileID: 4340579244792058428, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
       propertyPath: m_LocalPosition.x
       value: 5.2
       objectReference: {fileID: 0}
     - target: {fileID: 4340579244792058428, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 18.6
+      value: 24.8
       objectReference: {fileID: 0}
     - target: {fileID: 4340579244792058428, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
       propertyPath: m_LocalPosition.z
@@ -17568,14 +17828,26 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5153048525615089942, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
       propertyPath: chaseSpeed
-      value: 4
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 5153048525615089942, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
       propertyPath: detectRange
-      value: 10
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 5153048525615089942, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
       propertyPath: patrolRange
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 5153048525615089942, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
+      propertyPath: attackDamage
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 5153048525615089942, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
+      propertyPath: waitTimeAtPoint
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5153048525615089942, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
+      propertyPath: maxChaseDistFromSpawn
       value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 5794262191602718978, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
@@ -17584,7 +17856,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6189668728142872281, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
       propertyPath: suctionForce
-      value: 20
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 7517528506156357142, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
       propertyPath: m_Name
@@ -17665,16 +17937,20 @@ PrefabInstance:
       value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 5153048525615089942, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
+      propertyPath: detectRange
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 5153048525615089942, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
       propertyPath: patrolRange
-      value: 10
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 5153048525615089942, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
       propertyPath: attackDamage
-      value: 10
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 5153048525615089942, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
       propertyPath: maxChaseDistFromSpawn
-      value: 15
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 5153048525615089942, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
       propertyPath: stopMoveWhileAttacking
@@ -17694,7 +17970,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6189668728142872281, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
       propertyPath: suctionForce
-      value: 20
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 7517528506156357142, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
       propertyPath: m_Name
@@ -17716,6 +17992,26 @@ PrefabInstance:
     - target: {fileID: 2428575518824272108, guid: 1c7f2d43ed6e4c44480324a7991ef610, type: 3}
       propertyPath: m_Name
       value: eeel_1 (4)
+      objectReference: {fileID: 0}
+    - target: {fileID: 3060492303054140372, guid: 1c7f2d43ed6e4c44480324a7991ef610, type: 3}
+      propertyPath: chaseSpeed
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 3060492303054140372, guid: 1c7f2d43ed6e4c44480324a7991ef610, type: 3}
+      propertyPath: detectRange
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 3060492303054140372, guid: 1c7f2d43ed6e4c44480324a7991ef610, type: 3}
+      propertyPath: patrolRange
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 3060492303054140372, guid: 1c7f2d43ed6e4c44480324a7991ef610, type: 3}
+      propertyPath: patrolSpeed
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3060492303054140372, guid: 1c7f2d43ed6e4c44480324a7991ef610, type: 3}
+      propertyPath: maxChaseDistFromSpawn
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5239776458007916294, guid: 1c7f2d43ed6e4c44480324a7991ef610, type: 3}
       propertyPath: m_LocalPosition.x
@@ -17875,6 +18171,18 @@ PrefabInstance:
       value: fish5_1 (2)
       objectReference: {fileID: 0}
     - target: {fileID: 4479465151169508384, guid: bba04b90ab8ee3844b837e7dd2bfd053, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.55
+      objectReference: {fileID: 0}
+    - target: {fileID: 4479465151169508384, guid: bba04b90ab8ee3844b837e7dd2bfd053, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.55
+      objectReference: {fileID: 0}
+    - target: {fileID: 4479465151169508384, guid: bba04b90ab8ee3844b837e7dd2bfd053, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.55
+      objectReference: {fileID: 0}
+    - target: {fileID: 4479465151169508384, guid: bba04b90ab8ee3844b837e7dd2bfd053, type: 3}
       propertyPath: m_LocalPosition.x
       value: 9.1
       objectReference: {fileID: 0}
@@ -17924,15 +18232,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7163088797601532192, guid: bba04b90ab8ee3844b837e7dd2bfd053, type: 3}
       propertyPath: detectRange
-      value: 10
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 7163088797601532192, guid: bba04b90ab8ee3844b837e7dd2bfd053, type: 3}
       propertyPath: patrolRange
       value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 7163088797601532192, guid: bba04b90ab8ee3844b837e7dd2bfd053, type: 3}
+      propertyPath: rotateSpeed
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 7163088797601532192, guid: bba04b90ab8ee3844b837e7dd2bfd053, type: 3}
       propertyPath: attackDamage
-      value: 20
+      value: 25
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -19307,18 +19619,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PassiveEnemy
   currentState: 0
   patrolType: 1
-  patrolSpeed: 3
+  patrolSpeed: 4
   chaseSpeed: 5
-  patrolRange: 5
+  patrolRange: 0
   waitTimeAtPoint: 2
   waypoints:
   - {fileID: 1766915163}
   - {fileID: 1853932260}
   - {fileID: 2088119959}
-  detectRange: 5
+  detectRange: 0
   stopChaseDist: 7
   maxChaseDistFromSpawn: 20
-  attackRange: 1.5
+  attackRange: 0
   attackCooldown: 2
   attackDamage: 10
   damageDelay: 0.4
@@ -19337,12 +19649,12 @@ NavMeshAgent:
   m_GameObject: {fileID: 1700328133}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 3.9250002
+  m_Radius: 1
   m_Speed: 3.5
   m_Acceleration: 8
-  avoidancePriority: 50
+  avoidancePriority: 99
   m_AngularSpeed: 120
-  m_StoppingDistance: 0
+  m_StoppingDistance: 1
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1
@@ -19718,7 +20030,7 @@ Transform:
   m_GameObject: {fileID: 1766915162}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4.58, y: 14.84, z: 0}
+  m_LocalPosition: {x: 3.4, y: 14.7, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -19781,12 +20093,16 @@ PrefabInstance:
       value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 9212626533189652876, guid: bac796dfbf4f75544a513a8b6cc51546, type: 3}
+      propertyPath: detectRange
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 9212626533189652876, guid: bac796dfbf4f75544a513a8b6cc51546, type: 3}
       propertyPath: stopDistance
       value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 9212626533189652876, guid: bac796dfbf4f75544a513a8b6cc51546, type: 3}
       propertyPath: stopChaseDist
-      value: 8
+      value: 12
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -19865,7 +20181,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4297468143837111098, guid: a10ffe4ec5e227d49af8778ab5f21d5f, type: 3}
       propertyPath: stopDistance
-      value: 5
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 4297468143837111098, guid: a10ffe4ec5e227d49af8778ab5f21d5f, type: 3}
       propertyPath: stopChaseDist
@@ -19877,7 +20193,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4297468143837111098, guid: a10ffe4ec5e227d49af8778ab5f21d5f, type: 3}
       propertyPath: maxChaseDistFromSpawn
-      value: 12
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 4297468143837111098, guid: a10ffe4ec5e227d49af8778ab5f21d5f, type: 3}
       propertyPath: stopMoveWhileAttacking
@@ -20599,6 +20915,26 @@ PrefabInstance:
       propertyPath: m_Name
       value: eeel_1
       objectReference: {fileID: 0}
+    - target: {fileID: 3060492303054140372, guid: 1c7f2d43ed6e4c44480324a7991ef610, type: 3}
+      propertyPath: chaseSpeed
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 3060492303054140372, guid: 1c7f2d43ed6e4c44480324a7991ef610, type: 3}
+      propertyPath: detectRange
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 3060492303054140372, guid: 1c7f2d43ed6e4c44480324a7991ef610, type: 3}
+      propertyPath: patrolRange
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 3060492303054140372, guid: 1c7f2d43ed6e4c44480324a7991ef610, type: 3}
+      propertyPath: patrolSpeed
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3060492303054140372, guid: 1c7f2d43ed6e4c44480324a7991ef610, type: 3}
+      propertyPath: maxChaseDistFromSpawn
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5239776458007916294, guid: 1c7f2d43ed6e4c44480324a7991ef610, type: 3}
       propertyPath: m_LocalPosition.x
       value: 8.35
@@ -20674,7 +21010,7 @@ Transform:
   m_GameObject: {fileID: 1853932259}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -5.13, y: -0.06, z: 0}
+  m_LocalPosition: {x: -3.22, y: -1.22, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -20970,12 +21306,16 @@ PrefabInstance:
       value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 9212626533189652876, guid: bac796dfbf4f75544a513a8b6cc51546, type: 3}
+      propertyPath: detectRange
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 9212626533189652876, guid: bac796dfbf4f75544a513a8b6cc51546, type: 3}
       propertyPath: stopDistance
       value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 9212626533189652876, guid: bac796dfbf4f75544a513a8b6cc51546, type: 3}
       propertyPath: stopChaseDist
-      value: 8
+      value: 12
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -21235,7 +21575,7 @@ MonoBehaviour:
   displayImage: {fileID: 1949591402}
   backButton: {fileID: 1966196659}
   slides:
-  - image: {fileID: 21300000, guid: cecb91c8c780fd546ab66ef9494b4ba2, type: 3}
+  - image: {fileID: 4258432325420938200, guid: 62d4e85e7d108834397de1e2c5e8112c, type: 3}
     duration: 15
   - image: {fileID: 21300000, guid: 39f0a0387a19881479e32cf1d1bb9b30, type: 3}
     duration: 5
@@ -21331,7 +21671,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4297468143837111098, guid: a10ffe4ec5e227d49af8778ab5f21d5f, type: 3}
       propertyPath: stopDistance
-      value: 5
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 4297468143837111098, guid: a10ffe4ec5e227d49af8778ab5f21d5f, type: 3}
       propertyPath: stopChaseDist
@@ -21343,7 +21683,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4297468143837111098, guid: a10ffe4ec5e227d49af8778ab5f21d5f, type: 3}
       propertyPath: maxChaseDistFromSpawn
-      value: 12
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 4297468143837111098, guid: a10ffe4ec5e227d49af8778ab5f21d5f, type: 3}
       propertyPath: stopMoveWhileAttacking
@@ -22182,10 +22522,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TutorialPanel
   tutorialSprites:
-  - {fileID: 21300000, guid: 6b7aaf5aee5e63f4aba5c980f5a373bc, type: 3}
-  - {fileID: 21300000, guid: dc635cc296139de4ca98f0090fe2716f, type: 3}
-  - {fileID: 21300000, guid: 5c0d36f75ae2fbf48a56c79ac33770bc, type: 3}
-  - {fileID: 21300000, guid: 04012205643aaa248b3a5b00dab36f53, type: 3}
+  - {fileID: -369978147902854905, guid: d9b82634f2edd294f99468fdc661f4e5, type: 3}
+  - {fileID: -881906419831698275, guid: b91e2b79f8204aa4d912c23e69101317, type: 3}
+  - {fileID: 7188033399785404291, guid: 7d4817e9082cbbb428a35da64202ff6a, type: 3}
+  - {fileID: 9021585184963666049, guid: 8a25c249bc3a6a24db6590a0d5582841, type: 3}
   displayImage: {fileID: 350823438}
   leftButton: {fileID: 1567231613}
   rightButton: {fileID: 46649512}
@@ -22330,16 +22670,20 @@ PrefabInstance:
       value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 5153048525615089942, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
+      propertyPath: detectRange
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 5153048525615089942, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
       propertyPath: patrolRange
-      value: 10
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 5153048525615089942, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
       propertyPath: attackDamage
-      value: 10
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 5153048525615089942, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
       propertyPath: maxChaseDistFromSpawn
-      value: 15
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 5153048525615089942, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
       propertyPath: stopMoveWhileAttacking
@@ -22359,7 +22703,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6189668728142872281, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
       propertyPath: suctionForce
-      value: 20
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 7517528506156357142, guid: 63476106c28e8464fa71a89f3714e4c9, type: 3}
       propertyPath: m_Name
@@ -22400,7 +22744,7 @@ Transform:
   m_GameObject: {fileID: 2088119958}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.7, y: -27.9, z: 0}
+  m_LocalPosition: {x: -4.13, y: -27.9, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -23298,12 +23642,16 @@ PrefabInstance:
       value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 9212626533189652876, guid: bac796dfbf4f75544a513a8b6cc51546, type: 3}
+      propertyPath: detectRange
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 9212626533189652876, guid: bac796dfbf4f75544a513a8b6cc51546, type: 3}
       propertyPath: stopDistance
       value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 9212626533189652876, guid: bac796dfbf4f75544a513a8b6cc51546, type: 3}
       propertyPath: stopChaseDist
-      value: 8
+      value: 12
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
