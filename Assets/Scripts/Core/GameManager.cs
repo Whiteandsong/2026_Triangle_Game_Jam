@@ -20,6 +20,7 @@ public class GameManager : Singleton<GameManager>
     public int CurrentScareCharges { get; private set; }
 
     public float MaxSanity => maxSanity;
+    public float MaxOxygen => maxOxygen;
 
     [Header("UI Elements")]
     [SerializeField] private GameObject gameOverPanel;
@@ -160,6 +161,8 @@ public class GameManager : Singleton<GameManager>
             ? currentCheckpoint.RespawnPosition
             : defaultRespawnPosition;
         
+        // 防止玩家在重生时被怪物攻击
+        GameObject.FindGameObjectWithTag("Player").gameObject.GetComponent<PlayerController>().StartHiding(2f);
         // trigger respawn event
         GameEvents.TriggerPlayerRespawn(respawnPosition);
     }
@@ -173,28 +176,32 @@ public class GameManager : Singleton<GameManager>
     // 重置游戏状态，用于开始新游戏
     public void ResetGame()
     {
+        // 1. 重置数值
         CurrentOxygen = maxOxygen;
         CurrentSanity = maxSanity;
         CurrentScareCharges = maxScareCharges;
         checkpointScareCharges = maxScareCharges;
-        
+
+        // 2. 清空checkpoint和宝箱收集
         currentCheckpoint = null;
         collectedTreasures.Clear();
         
         // 保存初始的scare次数到PlayerPrefs
         PlayerPrefs.SetInt("ScareCharges", maxScareCharges);
         PlayerPrefs.Save();
-        
+
+        // 4. 刷新UI
         UpdateAllUI();
-        GameEvents.TriggerPlayerRespawn(defaultRespawnPosition);
-        
+
+        // 5. 重新加载第一关（刷新场景和出生点）
+        LevelManager.Instance?.ResetLevels();
     }
     
     // 恢复玩家满状态（用于手动切换关卡/调试）
     public void RestoreFullStats()
     {
         CurrentOxygen = maxOxygen;
-        CurrentSanity = maxSanity;
+        //CurrentSanity = maxSanity;
         UpdateAllUI();
     }
     

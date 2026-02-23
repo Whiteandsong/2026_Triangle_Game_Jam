@@ -27,9 +27,12 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private RuntimeAnimatorController defaultAnimatorController;
     [SerializeField] private RuntimeAnimatorController level4AnimatorController;
     
+
     [Header("Scare Settings")]
     [SerializeField] private float scareDuration = 5f;
+    [SerializeField] private float scareCooldown = 2f; // 冷却时间，可调
     private float scareTimer = 0f;
+    private bool isScareOnCooldown = false;
 
 
     [Header("Audio Settings")]
@@ -328,38 +331,53 @@ public class PlayerController : MonoBehaviour
 
     #region Scare Skill
 
-    private void UseScare()
+    public void UseScare()
     {
+        // 冷却中不能触发
+        if (isScareOnCooldown)
+        {
+            UIManager.Instance?.ShowDialogue("Scare Device is cooling down...");
+            return;
+        }
+
         // 检查是否还有Scare次数
         if (GameManager.Instance == null || !GameManager.Instance.HasScareCharges())
         {
             UIManager.Instance?.ShowDialogue("Scare device is dead...");
             return;
         }
-        
+
         // 消耗一次Scare次数
         if (!GameManager.Instance.UseScareCharge())
         {
             return;
         }
-        
+
         GameEvents.TriggerPlayerUseScare();
-        
+
         isScareHiding = true;
-        // 重置计时器 (替代 Invoke)
         scareTimer = scareDuration;
-        
+
         // 播放 Scare 动画
         if (animator != null)
         {
             animator.SetTrigger("Scare");
         }
-        
+
         // Audio
         AudioManager.Instance.PlaySFX(scareSoundEffect);
-        
+
         StartHiding();
         Debug.Log($"Player used scare skill and entered hiding for {scareDuration} seconds!");
+
+        // 设置冷却
+        isScareOnCooldown = true;
+        Invoke(nameof(ResetScareCooldown), scareCooldown);
+    }
+
+    private void ResetScareCooldown()
+    {
+        isScareOnCooldown = false;
     }
     
     private void EndScareHiding()
@@ -373,7 +391,7 @@ public class PlayerController : MonoBehaviour
 
     #region Hiding Methods
     
-    public void StartHiding()
+    public void StartHiding(float time = 0f)
     {
         if (!IsHiding) // 防止重复触发
         {
@@ -383,6 +401,11 @@ public class PlayerController : MonoBehaviour
             if (AudioManager.Instance != null) { AudioManager.Instance.FadeBGMToLower(0.8f);}
             
             GameEvents.TriggerPlayerStartHiding();
+        }
+
+        if (time > 0f)
+        {
+            Invoke(nameof(StopHiding), time);
         }
     }
     
