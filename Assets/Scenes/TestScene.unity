@@ -22811,8 +22811,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TutorialPanel
   tutorialSprites:
   - {fileID: -369978147902854905, guid: d9b82634f2edd294f99468fdc661f4e5, type: 3}
-  - {fileID: -881906419831698275, guid: b91e2b79f8204aa4d912c23e69101317, type: 3}
-  - {fileID: 7188033399785404291, guid: 7d4817e9082cbbb428a35da64202ff6a, type: 3}
+  - {fileID: 21300000, guid: 7db3628ffff31bc41a5f08cfb84fb523, type: 3}
+  - {fileID: 21300000, guid: 93b80f43f62e7b84babc50a172a03c2f, type: 3}
+  - {fileID: 21300000, guid: 10af181c3ce9b8a489af9626f387454f, type: 3}
   - {fileID: 21300000, guid: ddc3afa8d090e8449ae81690308ca91b, type: 3}
   displayImage: {fileID: 350823438}
   leftButton: {fileID: 1567231613}
