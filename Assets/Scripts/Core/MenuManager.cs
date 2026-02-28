@@ -65,9 +65,9 @@ public class MenuManager : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape) && isGamePlaying)
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
-            PauseGame();
+            OnESCButtonClicked();
         }
     }
 
@@ -153,6 +153,15 @@ public class MenuManager : MonoBehaviour
         #endif
     }
 
+    // Pause or Resume
+    public void OnESCButtonClicked()
+    {
+        if (isGamePlaying)
+            PauseGame();
+        else
+            ResumeGame();
+    }
+
     public void PauseGame()
     {
         Time.timeScale = 0f;
@@ -175,6 +184,7 @@ public class MenuManager : MonoBehaviour
         PlayButtonClickSound();
         if (pauseMenuPanel) pauseMenuPanel.SetActive(false);
         if (gameOverPanel) gameOverPanel.SetActive(false); // 也可以从结局面板回主菜单
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         ShowMainMenu();
     }
     

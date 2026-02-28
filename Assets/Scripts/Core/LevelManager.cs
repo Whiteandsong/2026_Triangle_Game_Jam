@@ -2,6 +2,8 @@ using UnityEngine;
 using System;
 using System.Collections;
 using UnityEngine.Rendering.Universal;
+using UnityEngine.SceneManagement;
+
 
 [Serializable]
 public class LevelData
@@ -70,8 +72,11 @@ public class LevelManager : Singleton<LevelManager>
     }
 
     // --- 数据加载逻辑 (只负责搬运数据，不负责流程等待) ---
-    public void LoadLevel(int levelIndex, bool showDialogue = true, bool restoreStats = true)
+    public void LoadLevel(int levelIndex, bool showDialogue = true, bool restoreStats = false)
     {
+        // 每次切关都补满氧气
+        GameManager.Instance?.ChangeOxygen(GameManager.Instance.MaxOxygen);
+
         if (levels == null || levelIndex < 0 || levelIndex >= levels.Length) return;
         
         currentLevelIndex = levelIndex;
@@ -141,8 +146,6 @@ public class LevelManager : Singleton<LevelManager>
 
     private IEnumerator ProcessLevelTransition(int targetIndex)
     {        
-        // 1.1 立即暂停时间 (防止怪物攻击)
-        Time.timeScale = 0f;
         
         // 1.2 禁用玩家控制 (防止玩家乱跑)
         if (player)
@@ -152,6 +155,16 @@ public class LevelManager : Singleton<LevelManager>
             // 清除速度，防止惯性
             if (player.TryGetComponent<Rigidbody2D>(out var rb)) rb.linearVelocity = Vector2.zero;
         }
+
+        // 2.1 扣除理智
+        if (GameManager.Instance)
+            GameManager.Instance.ChangeSanity(-GameManager.Instance.MaxSanity * 0.25f);
+
+        // 等待理智扣除的反馈能被看到
+        yield return new WaitForSeconds(0.5f);
+
+        // 1.1 立即暂停时间 (防止怪物攻击)
+        Time.timeScale = 0f;
 
         // 1.3 播放 Exit 动画 (屏幕变黑)
         float animDuration = 1f;
@@ -163,12 +176,9 @@ public class LevelManager : Singleton<LevelManager>
         
         // 1.4 等待变黑
         yield return new WaitForSecondsRealtime(animDuration);     
-        // 2.1 扣除理智
-        if (GameManager.Instance)
-            GameManager.Instance.ChangeSanity(-GameManager.Instance.MaxSanity * 0.25f);
             
         // 2.2 调用 LoadLevel 移动位置
-        LoadLevel(targetIndex, showDialogue: true, restoreStats: false);
+        LoadLevel(targetIndex, showDialogue: true, restoreStats: true);
         
         // 2.3 处理过场对话
         LevelData targetLevel = levels[targetIndex];
@@ -177,26 +187,17 @@ public class LevelManager : Singleton<LevelManager>
             UIManager.Instance?.ShowDialogue(targetLevel.transitionDialogue);
         }
 
-        // 2.4 缓冲一帧，确保相机已经瞬移到新位置，没有残影
-        yield return null; 
-
 
         // 3.1 播放 Enter 动画 (屏幕变亮)
         if (transitionUI) transitionUI.PlayEnterAnimation();
 
-        // 3.2 等待变亮动画播放完毕 (玩家此时已在出生点，但游戏仍暂停)
-        yield return new WaitForSecondsRealtime(animDuration);
-
-        // 3.3 解冻时间
         Time.timeScale = 1f;
-        
-        // 3.4 等待一帧，让物理系统和输入系统完全同步
-        yield return null;
         
         // 3.5 恢复玩家控制
         if (player)
         {
             var pc = player.GetComponent<PlayerController>();
+            pc.StartHiding(2f); // 防止玩家在过场动画中被怪物攻击
             if (pc) pc.enabled = true;
         }
     }
@@ -216,6 +217,12 @@ public class LevelManager : Singleton<LevelManager>
             if (pc) pc.enabled = false;
             if (player.TryGetComponent<Rigidbody2D>(out var rb)) rb.linearVelocity = Vector2.zero;
         }
+        // 3. 扣除理智值（与正常关卡切换一致）
+        if (GameManager.Instance)
+            GameManager.Instance.ChangeSanity(-GameManager.Instance.MaxSanity * 0.25f);
+
+        // 确保理智扣除的反馈能被看到
+        yield return new WaitForSeconds(0.5f);
 
         // 2. 播放黑幕动画（时间仍在流动）
         float waitTime = 1f;
@@ -227,9 +234,9 @@ public class LevelManager : Singleton<LevelManager>
 
         yield return new WaitForSeconds(waitTime);
 
-        // 3. 扣除理智值（与正常关卡切换一致）
-        if (GameManager.Instance)
-            GameManager.Instance.ChangeSanity(-GameManager.Instance.MaxSanity * 0.25f);
+
+        // 3.1 等待理智被顺利扣完
+        yield return new WaitForSeconds(1f);
 
         // 4. 现在才暂停时间
         Time.timeScale = 0f;
@@ -256,6 +263,13 @@ public class LevelManager : Singleton<LevelManager>
     {
         int next = currentLevelIndex + 1;
         return (next < levels.Length) ? levels[next].requiredTreasure : "";
+    }
+
+    // Reset to first level (used for New Game)
+    public void ResetLevels()
+    {
+        currentLevelIndex = 0;
+        LoadLevel(0, showDialogue: true, restoreStats: true);
     }
 
 #if UNITY_EDITOR
